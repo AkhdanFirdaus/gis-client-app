@@ -1,32 +1,23 @@
-import React from 'react'
-import reactLogo from './assets/react.svg'
 import './App.css'
 
+import React from 'react'
+import GeoJSON from 'ol/format/GeoJSON'
+import MapWrapper from './MapWrapper'
+
 function App() {
-  const [count, setCount] = React.useState(0)
+  const [features, setFeatures] = React.useState([])
+
+  React.useEffect(() => {
+    fetch('http://127.0.0.1:5173/bataskecjabar.geojson')
+      .then(res => res.json())
+      .then(res => {
+        setFeatures(new GeoJSON(res))
+      })
+  }, [])
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button className="btn btn-primary" onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <div style={{ height: '100%', position: 'absolute', left: '0px', width: '100%', overflow: 'hidden'}}>
+      <MapWrapper features={features} />
     </div>
   )
 }
