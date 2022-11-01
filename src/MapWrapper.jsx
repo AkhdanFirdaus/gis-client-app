@@ -79,7 +79,10 @@ function MapWrapper(props) {
   }
 
   return (
-    <div ref={mapElement} className="w-full h-screen"></div>
+    <>
+      <div ref={mapElement} className="w-full h-screen"></div>
+      <div className='absolute bg-white left-0 bottom-0 px-5 py-2 m-10'>Selected Coord: {selectedCoord}</div>
+    </>
   )
 }
 

@@ -6,7 +6,38 @@ function TambahLaporan() {
   return (
     <>
       <Navbar hasBack={true} title='Tambah Laporan' />
-      Halaman
+      <form className="space-y-4 h-full">
+        <div className="form-control w-full">
+          <label className="label">
+            <span className="label-text">What is your name?</span>
+            <span className="label-text-alt">Alt label</span>
+          </label>
+          <input type="text" placeholder="Type here" className="input input-bordered bg-white w-full" />
+        </div>
+        <div className="form-control w-full">
+          <label className="label">
+            <span className="label-text">Email/Phone?</span>
+            <span className="label-text-alt">Alt label</span>
+          </label>
+          <input type="text" placeholder="Type here" className="input input-bordered bg-white w-full" />
+        </div>
+        <div className="form-control w-full">
+          <label className="label">
+            <span className="label-text">Alamat?</span>
+            <span className="label-text-alt">Alt label</span>
+          </label>
+          <textarea className="textarea textarea-bordered bg-white w-full" placeholder="Type Here"></textarea>
+        </div>
+        <div className="form-control w-full">
+          <label className="label">
+            <span className="label-text">Keluhan?</span>
+            <span className="label-text-alt">Alt label</span>
+          </label>
+          <textarea className="textarea textarea-bordered bg-white w-full" placeholder="Type Here"></textarea>
+        </div>
+        <input type="file" className="file-input file-input-bordered bg-white w-full" />
+        <button type="submit" className="btn btn-primary">Kirim</button>
+      </form>
       <Footer />
     </>
   )
