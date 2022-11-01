@@ -10,12 +10,14 @@ import Style from 'ol/style/Style'
 import GeoJSON from 'ol/format/GeoJSON'
 import Fill from 'ol/style/Fill'
 import Stroke from 'ol/style/Stroke'
+import { useDispatch } from 'react-redux'
+import { changeCoordinate } from './features/coordinate/coordinateSlice'
 
 
 function MapWrapper(props) {
   const [map, setMap] = React.useState()
   const [featuresLayer, setFeaturesLayer] = React.useState()
-  const [selectedCoord, setSelectedCoord] = React.useState()
+  const dispatch = useDispatch()
 
   const mapElement = React.useRef()
 
@@ -74,14 +76,14 @@ function MapWrapper(props) {
 
   const handleMapClick = (event) => {
     const clickedCoord = mapRef.current.getCoordinateFromPixel(event.pixel)
-    setSelectedCoord(clickedCoord)
     console.log(clickedCoord)
+    dispatch(changeCoordinate(clickedCoord))
   }
 
   return (
     <>
       <div ref={mapElement} className="w-full h-screen"></div>
-      <div className='absolute bg-white left-0 bottom-0 px-5 py-2 m-10'>Selected Coord: {selectedCoord}</div>
+      {/* <div className='absolute bg-white left-0 bottom-0 px-5 py-2 m-10'>Selected Coord: {selectedCoord}</div> */}
     </>
   )
 }

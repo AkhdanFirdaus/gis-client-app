@@ -10,6 +10,7 @@ import Wilayah from './views/pages/Wilayah'
 import RuasJalan from './views/pages/RuasJalan'
 import Laporan from './views/pages/Laporan'
 import TambahLaporan from './views/pages/TambahLaporan'
+import SelectedCoordinate from './views/components/SelectedCoordinate'
 
 const routes = createBrowserRouter([
   {
@@ -47,7 +48,7 @@ function App() {
     <div className='w-full h-full absolute left-0 overflow-hidden'>
       <div className='relative'>
         <MapWrapper features={features} />
-        {/* <div className='absolute bg-white left-0 bottom-0 px-5 py-2 m-10'>Selected Coord: </div> */}
+        <SelectedCoordinate />
         <div className='sm:w-full md:w-1/3 h-full absolute top-0 right-0 p-4'>
           <div className='card bg-white h-full'>
             <div className='card-body scroll-auto overflow-y-auto'>
