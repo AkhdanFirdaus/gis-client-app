@@ -7,6 +7,9 @@ import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 import XYZ from 'ol/source/XYZ';
 import Style from 'ol/style/Style'
+import GeoJSON from 'ol/format/GeoJSON'
+import Fill from 'ol/style/Fill'
+import Stroke from 'ol/style/Stroke'
 
 
 function MapWrapper(props) {
@@ -28,18 +31,15 @@ function MapWrapper(props) {
   React.useEffect(() => {
     const initialFeaturesLayer = new VectorLayer({
       source: new VectorSource(),
-      style: (feature) => {
-        const style = new Style({
-          fill: new Fill({
-            color: [255, 255, 255, 0.5]
-          }),
-          stroke: new Stroke({
-            color: [0, 153, 255, 1],
-            width: 2,
-          })
+      style: new Style({
+        fill: new Fill({
+          color: '#0000ff',
+        }),
+        stroke: new Stroke({
+          color: '#000',
+          width: 2,
         })
-        return style
-      }
+      })
     })
 
     const initialMap = new Map({
@@ -63,16 +63,12 @@ function MapWrapper(props) {
   }, [])
 
   React.useEffect(() => {
-    if (props.features.length) {
+    if (props.features) {
       featuresLayer.setSource(
         new VectorSource({
-          features: props.features
+          features: new GeoJSON().readFeatures(props.features)
         })
       )
-
-      map.getView().fit(featuresLayer.getSource().getExtent(), {
-        padding: [100, 100, 100, 100]
-      })
     }
   }, [props.features])
 
@@ -83,10 +79,7 @@ function MapWrapper(props) {
   }
 
   return (
-    <div className='relative'>
-      <div ref={mapElement} className="w-full h-screen"></div>
-      <div className='absolute bg-white left-0 bottom-0 px-5 py-2 m-10'>Selected Coord: {selectedCoord}</div>
-    </div>
+    <div ref={mapElement} className="w-full h-screen"></div>
   )
 }
 
