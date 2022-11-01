@@ -1,10 +1,9 @@
 import './App.css'
 
 import React from 'react'
-import MapWrapper from './MapWrapper'
-import axios from 'axios'
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import MapWrapper from './views/components/MapWrapper'
 import Overview from './views/pages/Overview'
 import Wilayah from './views/pages/Wilayah'
 import RuasJalan from './views/pages/RuasJalan'
@@ -36,18 +35,10 @@ const routes = createBrowserRouter([
 ])
 
 function App() {
-  const [features, setFeatures] = React.useState()
-
-  React.useEffect(() => {
-    axios.get('http://127.0.0.1:5173/bataskecjabar.geojson').then(res => {
-      setFeatures(res.data)
-    })
-  }, [])
-
   return (
     <div className='w-full h-full absolute left-0 overflow-hidden'>
       <div className='relative'>
-        <MapWrapper features={features} />
+        <MapWrapper />
         <SelectedCoordinate />
         <div className='sm:w-full md:w-1/3 h-full absolute top-0 right-0 p-4'>
           <div className='card bg-white h-full'>

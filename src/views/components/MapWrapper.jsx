@@ -6,17 +6,13 @@ import TileLayer from 'ol/layer/Tile'
 import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 import XYZ from 'ol/source/XYZ';
-import Style from 'ol/style/Style'
 import GeoJSON from 'ol/format/GeoJSON'
-import Fill from 'ol/style/Fill'
-import Stroke from 'ol/style/Stroke'
 import { useDispatch } from 'react-redux'
-import { changeCoordinate } from './features/coordinate/coordinateSlice'
+import { changeCoordinate } from '../../features/coordinate/coordinateSlice'
+import { useGetWilayahJabarQuery } from '../../services/wilayah'
 
-
-function MapWrapper(props) {
+function MapCore(props) {
   const [map, setMap] = React.useState()
-  const [featuresLayer, setFeaturesLayer] = React.useState()
   const dispatch = useDispatch()
 
   const mapElement = React.useRef()
@@ -30,20 +26,11 @@ function MapWrapper(props) {
     })
   })
 
+  const initialFeaturesLayer = new VectorLayer({
+    source: new VectorSource(),
+  })
+  
   React.useEffect(() => {
-    const initialFeaturesLayer = new VectorLayer({
-      source: new VectorSource(),
-      style: new Style({
-        fill: new Fill({
-          color: '#0000ff',
-        }),
-        stroke: new Stroke({
-          color: '#000',
-          width: 2,
-        })
-      })
-    })
-
     const initialMap = new Map({
       target: mapElement.current,
       layers: [
@@ -61,12 +48,12 @@ function MapWrapper(props) {
     initialMap.on('click', handleMapClick)
 
     setMap(initialMap)
-    setFeaturesLayer(initialFeaturesLayer)
   }, [])
 
   React.useEffect(() => {
+    console.log(props.features)
     if (props.features) {
-      featuresLayer.setSource(
+      initialFeaturesLayer.setSource(
         new VectorSource({
           features: new GeoJSON().readFeatures(props.features)
         })
@@ -83,7 +70,28 @@ function MapWrapper(props) {
   return (
     <>
       <div ref={mapElement} className="w-full h-screen"></div>
-      {/* <div className='absolute bg-white left-0 bottom-0 px-5 py-2 m-10'>Selected Coord: {selectedCoord}</div> */}
+    </>
+  )
+}
+
+function MapWrapper() {
+  const { data, error, isLoading } = useGetWilayahJabarQuery()
+
+  if (error) {
+    return (
+      <>Something Error happened</>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <>Loading...</>
+    )
+  }
+
+  return (
+    <>
+      <MapCore features={data} />
     </>
   )
 }
