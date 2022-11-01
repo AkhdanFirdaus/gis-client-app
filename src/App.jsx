@@ -5,11 +5,11 @@ import MapWrapper from './MapWrapper'
 import axios from 'axios'
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import Overview from './pages/Overview'
-import Wilayah from './pages/Wilayah'
-import RuasJalan from './pages/RuasJalan'
-import Laporan from './pages/Laporan'
-import TambahLaporan from './pages/TambahLaporan'
+import Overview from './views/pages/Overview'
+import Wilayah from './views/pages/Wilayah'
+import RuasJalan from './views/pages/RuasJalan'
+import Laporan from './views/pages/Laporan'
+import TambahLaporan from './views/pages/TambahLaporan'
 
 const routes = createBrowserRouter([
   {
