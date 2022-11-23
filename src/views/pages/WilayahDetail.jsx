@@ -6,9 +6,11 @@ function WilayahDetail() {
 
   if (!selectedWilayah) return (<></>)
   return (
-    <div className="card bg-white">
-      <div className="card-body">
-        <h1>Wilayah Detail {selectedWilayah}</h1>
+    <div className="w-full md:w-1/2">
+      <div className="card bg-white">
+        <div className="card-body">
+          <h1>Wilayah Detail {selectedWilayah}</h1>
+        </div>
       </div>
     </div>
   )
