@@ -4,10 +4,13 @@ export const wilayahApi = createApi({
   reducerPath: 'wilayahApi',
   baseQuery: fetchBaseQuery({baseUrl: 'http://127.0.0.1:5173/'}),
   endpoints: (builder) => ({
-    getWilayahJabar: builder.query({
-      query: (_) => 'bataskecjabar.geojson',
+    getBatasKecWilayahJabar: builder.query({
+      query: (_) => 'bataskecjabar.geojson'
+    }),
+    getWilayahUPTD3Jabar: builder.query({
+      query: (_) => 'wilayah_uptd3.geojson',
     })
   })
 })
 
-export const { useGetWilayahJabarQuery } = wilayahApi
+export const { useGetBatasKecWilayahJabarQuery, useGetWilayahUPTD3JabarQuery } = wilayahApi

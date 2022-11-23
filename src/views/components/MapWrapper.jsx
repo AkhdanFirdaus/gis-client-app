@@ -7,18 +7,28 @@ import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 import XYZ from 'ol/source/XYZ';
 import GeoJSON from 'ol/format/GeoJSON'
-import { useDispatch } from 'react-redux'
+
+import { useDispatch, useSelector } from 'react-redux'
 import { changeCoordinate } from '../../features/coordinate/coordinateSlice'
-import { useGetWilayahJabarQuery } from '../../services/wilayah'
+import { useGetWilayahUPTD3JabarQuery } from '../../services/wilayah'
+
+import { Player } from '@lottiefiles/react-lottie-player'
+import loadingMap from '../../assets/lottie/97952-loading-animation-blue.json'
+import Style from 'ol/style/Style'
+import Fill from 'ol/style/Fill'
+import Stroke from 'ol/style/Stroke'
+import Select from 'ol/interaction/Select'
+import { altKeyOnly, click, pointerMove } from 'ol/events/condition'
 
 function MapCore(props) {
   const [map, setMap] = React.useState()
   const dispatch = useDispatch()
 
   const mapElement = React.useRef()
-
   const mapRef = React.useRef()
   mapRef.current = map
+
+  const basemapVisiblity = useSelector((state) => state.basemap.value)
 
   const baseMapLayer = new TileLayer({
     source: new XYZ({
@@ -27,9 +37,38 @@ function MapCore(props) {
   })
 
   const initialFeaturesLayer = new VectorLayer({
-    source: new VectorSource(),
+    source: new VectorSource()
   })
-  
+
+  const selectStyle = new Style({
+    fill: new Fill({
+      color: '#eeeeee'
+    }),
+    stroke: new Stroke({
+      color: 'rgba(255, 255, 255, 0.7)',
+      width: 2
+    })
+  })
+
+  let selected = null
+
+  const handleMapClick = (event) => {
+    const clickedCoord = mapRef.current.getCoordinateFromPixel(event.pixel)
+    dispatch(changeCoordinate(clickedCoord))
+    
+    if (selected !== null) {
+      selected.setStyle(undefined)
+      selected = null
+    }
+
+    mapRef.current.forEachFeatureAtPixel(event.pixel, (f) => {
+      selected = f
+      selectStyle.getFill().setColor('#ffeeee')
+      f.setStyle(selectStyle)
+      return true
+    })
+  }
+
   React.useEffect(() => {
     const initialMap = new Map({
       target: mapElement.current,
@@ -47,11 +86,39 @@ function MapCore(props) {
 
     initialMap.on('click', handleMapClick)
 
+    // const style = new Style({
+    //   fill: new Fill({
+    //     color: '#eeeeee',
+    //   })
+    // })
+    // 
+    // const selected = new Style({
+    //   fill: new Fill({
+    //     color: '#eeeeee'
+    //   }),
+    //   stroke: new Stroke({
+    //     color: 'rgba(255, 255, 255, 0.7',
+    //     width:2
+    //   })
+    // })
+  
+    // const selectStyle = (feature) => {
+    //   const color = feature.get('COLOR') || '#eeeeee'
+    //   selected.getFill().setColor(color)
+    //   return selected
+    // }
+
+    // let select = new Select({
+    //   condition: pointerMove,
+    //   style: selectStyle
+    // })
+
+    // initialMap.addInteraction(select)
+
     setMap(initialMap)
   }, [])
 
   React.useEffect(() => {
-    console.log(props.features)
     if (props.features) {
       initialFeaturesLayer.setSource(
         new VectorSource({
@@ -61,11 +128,9 @@ function MapCore(props) {
     }
   }, [props.features])
 
-  const handleMapClick = (event) => {
-    const clickedCoord = mapRef.current.getCoordinateFromPixel(event.pixel)
-    console.log(clickedCoord)
-    dispatch(changeCoordinate(clickedCoord))
-  }
+  React.useEffect(() => {
+    console.log(map)
+  }, [basemapVisiblity])
 
   return (
     <>
@@ -75,20 +140,18 @@ function MapCore(props) {
 }
 
 function MapWrapper() {
-  const { data, error, isLoading } = useGetWilayahJabarQuery()
+  const { data, error, isLoading } = useGetWilayahUPTD3JabarQuery()
 
-  if (error) {
-    return (
-      <>Something Error happened</>
-    )
-  }
-
-  if (isLoading) {
-    return (
-      <>Loading...</>
-    )
-  }
-
+  if (error) return (<>Something Error happened</>)
+  if (isLoading) return (
+    <>
+      <div className='flex justify-center items-center w-screen h-screen'>
+        <div className='w-48 h-48'>
+          <Player src={loadingMap} loop autoplay />
+        </div>
+      </div>
+    </>
+  )
   return (
     <>
       <MapCore features={data} />

@@ -5,9 +5,12 @@ function SelectedCoordinate() {
   const selectedCoordinate = useSelector((state) => state.coordinate.value)
 
   return (
-    <>
-      <div className='absolute bg-white left-0 bottom-0 px-5 py-2 m-10'>Selected Coord: {selectedCoordinate[0]}, {selectedCoordinate[1]}</div>
-    </>
+    <div className="card bg-white">
+      <div className="card-body">
+        <h6 className="text-black font-medium">Selected Coord</h6>
+        <p>{selectedCoordinate[0]}, {selectedCoordinate[1]}</p>
+      </div>
+    </div>
   )
 }
 

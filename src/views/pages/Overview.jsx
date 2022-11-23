@@ -4,7 +4,44 @@ import Footer from "../components/Footer"
 import Header from "../components/Header"
 import Navbar from "../components/Navbar"
 
+function Card({props}) {
+  return (
+    <>
+      <Link to={props.link}>
+        <div className='card bg-white shadow'>
+          <div className='card-body items-center text-center'>
+            <h2 className="card-title">{props.leading}</h2>
+            <p>{props.title}</p>
+          </div>
+        </div>
+      </Link>
+    </>
+  )
+}
+
 function Overview() {
+  const datalist = [
+    {
+      leading: 24,
+      title: "Wilayah",
+      link: "/wilayah"
+    },
+    {
+      leading: 123,
+      title: "Ruas Jalan",
+      link: "/ruas-jalan"
+    },
+    {
+      leading: 4,
+      title: "Laporan",
+      link: "/laporan"
+    },
+    {
+      leading: "+",
+      title: "Buat Laporan",
+      link: "/buat-laporan"
+    }
+  ]
   return (
     <>
       <div className="h-full flex flex-col justify-between">
@@ -13,38 +50,9 @@ function Overview() {
           <Header title='Rata-Rata' subtitle='Indeks Kondisi Perkerasan' />
           <div className='mt-4'>
             <div className="grid grid-cols-2 gap-4">
-              <Link to={'/wilayah'}>
-                <div className='card bg-white shadow'>
-                  <div className='card-body items-center text-center'>
-                    <h2 className="card-title">24</h2>
-                    <p>Wilayah</p>
-                  </div>
-                </div>
-              </Link>
-              <Link to={'/ruas-jalan'}>
-                <div className='card bg-white shadow'>
-                  <div className='card-body items-center text-center'>
-                    <h2 className="card-title">123</h2>
-                    <p>Ruas Jalan</p>
-                  </div>
-                </div>
-              </Link>
-              <Link to={'/laporan'}>
-                <div className='card bg-white shadow'>
-                  <div className='card-body items-center text-center'>
-                    <h2 className="card-title">4</h2>
-                    <p>Laporan</p>
-                  </div>
-                </div>
-              </Link>
-              <Link to={'/buat-laporan'}>
-                <div className='card bg-white shadow'>
-                  <div className='card-body items-center text-center'>
-                    <h2 className="card-title">+</h2>
-                    <p>Buat Laporan</p>
-                  </div>
-                </div>
-              </Link>
+              {datalist.map(item => {
+                return <Card key={item.link} props={item} />
+              })}
             </div>
           </div>
         </main>
