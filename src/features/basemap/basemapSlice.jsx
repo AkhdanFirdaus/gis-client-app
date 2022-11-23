@@ -9,8 +9,6 @@ import GeoJSON from "ol/format/GeoJSON"
 const initialState = {
   value: {
     visible: true,
-    activeLayer: 0,
-    savedLayers: ['wilayah_uptd3'],
     map: new Map({
       layers: [],
       view: new View({
@@ -37,39 +35,52 @@ export const basemapSlice = createSlice({
     },
     addTileLayer: (state, action) => {
       const { map } = state.value
+      const { tile, name } = action.payload
       const newlayer = new TileLayer({
-        source: action.payload
+        source: tile
       })
+      newlayer.set('name', name)
       map.addLayer(newlayer)
     },
     addFeatureLayer: (state, action) => {
       const { map } = state.value
-      
+      const name = action.payload.name
+
+      let mapIsAvailable = false
       map.getLayers().forEach(item => {
-        console.log(item)
+        mapIsAvailable = item.get('name') === name
       })
 
-      const newlayer = new VectorLayer({
-        source: new VectorSource({
-          features: new GeoJSON().readFeatures(action.payload)
-        }),
-        style: new Style({
-          fill: new Fill({
-            color: 'magenta'
+      if (!mapIsAvailable) {
+        const newlayer = new VectorLayer({
+          source: new VectorSource({
+            features: new GeoJSON().readFeatures(action.payload)
           }),
-          stroke: new Stroke({
-            width: 1,
-            color: 'white'
+          style: new Style({
+            fill: new Fill({
+              color: 'magenta'
+            }),
+            stroke: new Stroke({
+              width: 1,
+              color: 'white'
+            })
           })
         })
-      })
-      map.addLayer(newlayer)
+        newlayer.set('name', name)
+        map.addLayer(newlayer)
+      }
+      
     },
     toggleMap: (state) => {
       state.value.visible = !state.value.visible
     },
-    setActiveLayer: (state, action) => {
-      state.value.activeLayer = action.payload
+    toggleLayer: (state, action) => {
+      const { map } = state.value
+      const name = action.payload
+      
+      map.getLayers().forEach(layer => {
+        layer.setVisible(layer.get('name') == name ? !layer.getVisible() : layer.getVisible())
+      })
     }
   }
 })
@@ -80,7 +91,7 @@ export const {
   toggleMap, 
   addTileLayer, 
   addFeatureLayer,
-  setActiveLayer
+  toggleLayer
 } = basemapSlice.actions
 
 export default basemapSlice.reducer

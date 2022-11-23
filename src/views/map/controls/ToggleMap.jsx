@@ -1,18 +1,27 @@
+import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { toggleMap, addFeatureLayer } from "../../features/basemap/basemapSlice"
+import { toggleMap, addFeatureLayer, toggleLayer } from "../../../features/basemap/basemapSlice"
 
 
 function ToggleComponent() {
   const dispatch = useDispatch()
 
   const { visible } = useSelector((state) => state.basemap.value)
-
-  const showUptd = () => {
+  
+  useEffect(() => {
     fetch('http://127.0.0.1:5173/wilayah_uptd3.geojson')
       .then(response => response.json())
       .then(result => {
         dispatch(addFeatureLayer(result))
       })
+  }, [])
+
+  const toggleUptd = () => {
+    dispatch(toggleLayer('wilayah_uptd3'))
+  }
+
+  const toggleBase = () => {
+    dispatch(toggleLayer('baseosm'))
   }
 
   return (
@@ -22,12 +31,13 @@ function ToggleComponent() {
           <div className="form-control">
             <label className="cursor-pointer label">
               <span className="label-text">Wilayah UPTD 3</span>
-              <button 
-                className="btn btn-sm btn-primary" 
-                onClick={showUptd} 
-              >
-                +
-              </button>
+              <input 
+                type="checkbox" 
+                className="toggle toggle-accent" 
+                defaultChecked={visible} 
+                value={visible} 
+                onChange={toggleUptd} 
+              />
             </label>
           </div>
           <div className="form-control">
@@ -38,7 +48,7 @@ function ToggleComponent() {
                 className="toggle toggle-accent" 
                 defaultChecked={visible} 
                 value={visible} 
-                onChange={() => dispatch(toggleMap())} 
+                onChange={toggleBase} 
               />
             </label>
           </div>

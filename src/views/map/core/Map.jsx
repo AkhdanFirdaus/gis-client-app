@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react"
 
 import { OSM } from "ol/source"
-import MapContext from "./MapContext"
 import { useDispatch, useSelector } from "react-redux"
 
 import { initMapRef, removeMapRef, addTileLayer } from "../../../features/basemap/basemapSlice"
@@ -14,7 +13,10 @@ const Map = ({ children, zoom, center }) => {
 
   useEffect(() => {
     dispatch(initMapRef(mapRef.current))
-    dispatch(addTileLayer(new OSM()))
+    dispatch(addTileLayer({
+      tile: new OSM(),
+      name: 'baseosm'
+    }))
     return () => dispatch(removeMapRef())
   }, [])
 
@@ -30,11 +32,9 @@ const Map = ({ children, zoom, center }) => {
 
   return (
     <>
-      <MapContext.Provider value={{ map }}>
-        <div className="w-full h-screen" ref={mapRef}>
-          {children}
-        </div>
-      </MapContext.Provider>
+      <div className="w-full h-screen" ref={mapRef}>
+        {children}
+      </div>
     </>
   )
 }

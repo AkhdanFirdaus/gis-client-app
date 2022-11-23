@@ -2,10 +2,25 @@ import './App.css'
 
 import React from 'react'
 
-import MapWrapper from './views/pages/MapWrapper'
-import LeftComponent from './views/components/LeftComponent'
 import { RouterProvider } from 'react-router-dom'
 import routes from './routes'
+
+import MapWrapper from './views/pages/MapWrapper'
+import WilayahDetail from "./views/pages/WilayahDetail"
+import SelectedCoordinate from "./views/components/SelectedCoordinate"
+import ToggleMap from "./views/map/controls/ToggleMap"
+
+function LeftComponent() {
+  return (
+    <>
+      <div className='absolute left-0 bottom-0 w-full space-y-3 p-5'>
+        <WilayahDetail />
+        <SelectedCoordinate />
+        <ToggleMap />
+      </div>
+    </>
+  )
+}
 
 function App() {
   return (
