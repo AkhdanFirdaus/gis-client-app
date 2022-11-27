@@ -8,8 +8,6 @@ import Select from "ol/interaction/Select"
 import GeoJSON from "ol/format/GeoJSON"
 import { Point } from 'ol/geom'
 import { fromLonLat } from 'ol/proj'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faMapPin } from '@fortawesome/free-solid-svg-icons'
 
 const initialState = {
   value: {
@@ -70,14 +68,18 @@ export const basemapSlice = createSlice({
       const { map } = state.value
       const { name, color, featureType } = action.payload
 
-      let mapIsAvailable = false
-      map.getLayers().forEach(item => {
-        mapIsAvailable = item.get('name') === name
+      let mapIsAvailable = false 
+      map.getAllLayers().forEach(item => {
+        if (item.get('name') === name) {
+          mapIsAvailable = true
+        } else {
+          mapIsAvailable = false
+        }
       })
 
       if (!mapIsAvailable) {
         const newlayer = new VectorLayer({
-          zIndex: 3,
+          zIndex: map.getAllLayers().length + 1,
           source: new VectorSource(),
           style: new Style({
             fill: new Fill({
@@ -100,11 +102,8 @@ export const basemapSlice = createSlice({
           // TODO WHEN VECTOR
           newlayer.getStyle().setImage(new Icon({
             anchor: [0.5, 1],
-            img: <FontAwesomeIcon icon={faMapPin} />
+            src: 'https://github.com/openlayers/openlayers/blob/v3.20.1/examples/resources/logo-70x70.png?raw=true'
           }))
-          newlayer.getSource().addFeatures(
-            new Feature(new Point(fromLonLat([106.8296376, -6.1863376])))
-          )
         }
         newlayer.set('name', name)
         map.addLayer(newlayer)
@@ -133,8 +132,14 @@ export const basemapSlice = createSlice({
       const { map } = state.value
       state.value.selectedCoordinate = action.payload
 
-      const markerLayer = map.getLayers().get('marker')
-      console.log(markerLayer)
+      const marker = map.getAllLayers().filter(layer => {
+        if (layer.get('name') == 'marker') return layer
+        else return null
+      })
+      
+      marker[0].getSource().addFeatures(
+        new Feature(new Point(fromLonLat(action.payload)))
+      )
     },
     clearCoordinate: (state) => {
       state.value.selectedCoordinate = []

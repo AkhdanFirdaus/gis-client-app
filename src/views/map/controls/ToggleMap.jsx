@@ -17,7 +17,7 @@ function ToggleComponent() {
         dispatch(addFeatureLayer({...result, color: 'magenta', featureType: 'geojson'}))
       })
       .then(() => {
-        dispatch(addFeatureLayer({name: 'marker', featureType: 'vector'}))
+        dispatch(addFeatureLayer({name: 'marker', featureType: 'marker'}))
       })
   }, [])
 

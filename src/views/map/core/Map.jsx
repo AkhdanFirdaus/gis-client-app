@@ -37,11 +37,10 @@ const Map = ({ children, zoom, center }) => {
   
   useEffect(() => {
     if (!map) return
-    const getCoordinate = (e) => {
+    map.on('click', (e) => {
       const selected = map.getCoordinateFromPixel(e.pixel)
       dispatch(changeCoordinate(selected))
-    }
-    map.on('click', getCoordinate)
+    })
   }, [])
 
   return (
