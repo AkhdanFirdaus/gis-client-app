@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react"
 import { OSM } from "ol/source"
 import { useDispatch, useSelector } from "react-redux"
 
-import { initMapRef, removeMapRef, addTileLayer } from "../../../features/basemap/basemapSlice"
+import { initMapRef, removeMapRef, addTileLayer, selectFeature, changeCoordinate } from "../../../features/basemap/basemapSlice"
 
 const Map = ({ children, zoom, center }) => {
   const mapRef = useRef()
@@ -23,12 +23,26 @@ const Map = ({ children, zoom, center }) => {
   useEffect(() => {
     if (!map) return
     map.getView().setZoom(zoom)
-  }, [zoom, map])
+  }, [zoom])
 
   useEffect(() => {
     if (!map) return
     map.getView().setCenter(center)
-  }, [center, map])
+  }, [center])
+
+  useEffect(() => {
+    if (!map) return
+    dispatch(selectFeature())
+  }, [])
+  
+  useEffect(() => {
+    if (!map) return
+    const getCoordinate = (e) => {
+      const selected = map.getCoordinateFromPixel(e.pixel)
+      dispatch(changeCoordinate(selected))
+    }
+    map.on('click', getCoordinate)
+  }, [])
 
   return (
     <>

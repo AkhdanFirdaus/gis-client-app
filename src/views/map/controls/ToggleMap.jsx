@@ -1,12 +1,14 @@
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { toggleMap, addFeatureLayer, toggleLayer } from "../../../features/basemap/basemapSlice"
+import { addFeatureLayer, toggleLayer } from "../../../features/basemap/basemapSlice"
+import { toggleMenu as toggleMenuAction } from "../../../features/menu/menuSlice"
 
 
 function ToggleComponent() {
   const dispatch = useDispatch()
 
   const { visible } = useSelector((state) => state.basemap.value)
+  const mapVisiblity = useSelector((state) => state.menu.value)
   
   useEffect(() => {
     fetch('http://127.0.0.1:5173/wilayah_uptd3.geojson')
@@ -15,6 +17,10 @@ function ToggleComponent() {
         dispatch(addFeatureLayer(result))
       })
   }, [])
+
+  const toggleMenu = () => {
+    dispatch(toggleMenuAction())
+  }
 
   const toggleUptd = () => {
     dispatch(toggleLayer('wilayah_uptd3'))
@@ -30,10 +36,22 @@ function ToggleComponent() {
         <div className="card-body">
           <div className="form-control">
             <label className="cursor-pointer label">
+              <span className="label-text">Menu</span>
+              <input 
+                type="checkbox" 
+                className="toggle" 
+                defaultChecked={mapVisiblity} 
+                value={mapVisiblity} 
+                onChange={toggleMenu} 
+              />
+            </label>
+          </div>
+          <div className="form-control">
+            <label className="cursor-pointer label">
               <span className="label-text">Wilayah UPTD 3</span>
               <input 
                 type="checkbox" 
-                className="toggle toggle-accent" 
+                className="toggle" 
                 defaultChecked={visible} 
                 value={visible} 
                 onChange={toggleUptd} 
@@ -45,7 +63,7 @@ function ToggleComponent() {
               <span className="label-text">Toggle Map</span> 
               <input 
                 type="checkbox" 
-                className="toggle toggle-accent" 
+                className="toggle" 
                 defaultChecked={visible} 
                 value={visible} 
                 onChange={toggleBase} 

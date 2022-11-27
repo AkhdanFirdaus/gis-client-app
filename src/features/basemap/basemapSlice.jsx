@@ -4,11 +4,13 @@ import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 import TileLayer from "ol/layer/Tile"
 import {Style, Fill, Stroke} from 'ol/style'
+import Select from "ol/interaction/Select"
 import GeoJSON from "ol/format/GeoJSON"
 
 const initialState = {
   value: {
     visible: true,
+    selectedCoordinate: [],
     map: new Map({
       layers: [],
       view: new View({
@@ -20,6 +22,24 @@ const initialState = {
     })
   }
 }
+
+const selected = new Style({
+  fill: new Fill({
+    color: '#ffeeee'
+  }),
+  stroke: new Stroke({
+    color: 'rgba(255, 255, 255, 0.7)',
+    width: 2
+  })
+})
+
+const selectStyle = (feature) => {
+  const color = '#eeeeee'
+  selected.getFill().setColor(color)
+  return selected
+}
+
+const selectSingleClick = new Select({style: selectStyle})
 
 export const basemapSlice = createSlice({
   name: 'basemap',
@@ -53,6 +73,7 @@ export const basemapSlice = createSlice({
 
       if (!mapIsAvailable) {
         const newlayer = new VectorLayer({
+          zIndex: 3,
           source: new VectorSource({
             features: new GeoJSON().readFeatures(action.payload)
           }),
@@ -69,7 +90,6 @@ export const basemapSlice = createSlice({
         newlayer.set('name', name)
         map.addLayer(newlayer)
       }
-      
     },
     toggleMap: (state) => {
       state.value.visible = !state.value.visible
@@ -81,6 +101,20 @@ export const basemapSlice = createSlice({
       map.getLayers().forEach(layer => {
         layer.setVisible(layer.get('name') == name ? !layer.getVisible() : layer.getVisible())
       })
+    },
+    selectFeature: (state) => {
+      const { map } = state.value
+      map.addInteraction(selectSingleClick)
+    },
+    removeInteraction: (state) => {
+      const { map } = state.value
+      map.removeInteraction(selectSingleClick)
+    },
+    changeCoordinate: (state, action) => {
+      state.value.selectedCoordinate = action.payload
+    },
+    clearCoordinate: (state) => {
+      state.value.selectedCoordinate = []
     }
   }
 })
@@ -91,7 +125,11 @@ export const {
   toggleMap, 
   addTileLayer, 
   addFeatureLayer,
-  toggleLayer
+  toggleLayer,
+  selectFeature,
+  removeInteraction,
+  changeCoordinate,
+  clearCoordinate
 } = basemapSlice.actions
 
 export default basemapSlice.reducer
