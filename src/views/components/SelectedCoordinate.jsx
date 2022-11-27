@@ -15,7 +15,7 @@ function SelectedCoordinate() {
   if (!isVisible) return (<></>)
 
   return (
-    <div className="w-full md:w-1/2">
+    <div className="w-full">
       <div className="card bg-white">
         <div className="card-body">
           <h6 className="text-black font-medium">

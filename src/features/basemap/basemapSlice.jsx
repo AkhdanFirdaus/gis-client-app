@@ -1,11 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { View, Map } from 'ol'
+import { View, Map, Feature } from 'ol'
 import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 import TileLayer from "ol/layer/Tile"
-import {Style, Fill, Stroke} from 'ol/style'
+import {Style, Fill, Stroke, Icon} from 'ol/style'
 import Select from "ol/interaction/Select"
 import GeoJSON from "ol/format/GeoJSON"
+import { Point } from 'ol/geom'
+import { fromLonLat } from 'ol/proj'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faMapPin } from '@fortawesome/free-solid-svg-icons'
 
 const initialState = {
   value: {
@@ -64,7 +68,7 @@ export const basemapSlice = createSlice({
     },
     addFeatureLayer: (state, action) => {
       const { map } = state.value
-      const name = action.payload.name
+      const { name, color, featureType } = action.payload
 
       let mapIsAvailable = false
       map.getLayers().forEach(item => {
@@ -74,12 +78,10 @@ export const basemapSlice = createSlice({
       if (!mapIsAvailable) {
         const newlayer = new VectorLayer({
           zIndex: 3,
-          source: new VectorSource({
-            features: new GeoJSON().readFeatures(action.payload)
-          }),
+          source: new VectorSource(),
           style: new Style({
             fill: new Fill({
-              color: 'magenta'
+              color: color
             }),
             stroke: new Stroke({
               width: 1,
@@ -87,6 +89,23 @@ export const basemapSlice = createSlice({
             })
           })
         })
+
+        if (featureType === 'geojson') {
+          newlayer.getSource().addFeatures(
+            new GeoJSON().readFeatures(action.payload)
+          )
+        }
+
+        if (featureType === 'marker') {
+          // TODO WHEN VECTOR
+          newlayer.getStyle().setImage(new Icon({
+            anchor: [0.5, 1],
+            img: <FontAwesomeIcon icon={faMapPin} />
+          }))
+          newlayer.getSource().addFeatures(
+            new Feature(new Point(fromLonLat([106.8296376, -6.1863376])))
+          )
+        }
         newlayer.set('name', name)
         map.addLayer(newlayer)
       }
@@ -111,7 +130,11 @@ export const basemapSlice = createSlice({
       map.removeInteraction(selectSingleClick)
     },
     changeCoordinate: (state, action) => {
+      const { map } = state.value
       state.value.selectedCoordinate = action.payload
+
+      const markerLayer = map.getLayers().get('marker')
+      console.log(markerLayer)
     },
     clearCoordinate: (state) => {
       state.value.selectedCoordinate = []

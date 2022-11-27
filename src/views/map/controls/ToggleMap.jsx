@@ -14,7 +14,10 @@ function ToggleComponent() {
     fetch('http://127.0.0.1:5173/wilayah_uptd3.geojson')
       .then(response => response.json())
       .then(result => {
-        dispatch(addFeatureLayer(result))
+        dispatch(addFeatureLayer({...result, color: 'magenta', featureType: 'geojson'}))
+      })
+      .then(() => {
+        dispatch(addFeatureLayer({name: 'marker', featureType: 'vector'}))
       })
   }, [])
 
@@ -31,7 +34,7 @@ function ToggleComponent() {
   }
 
   return (
-    <div className="w-full md:w-1/2">
+    <div className="w-full">
       <div className="card bg-white">
         <div className="card-body">
           <div className="form-control">

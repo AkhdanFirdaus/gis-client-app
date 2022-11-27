@@ -9,7 +9,7 @@ export const wilayahSlice = createSlice({
   initialState,
   reducers: {
     changeWilayah: (state, action) => {
-      state.value = action.payload
+      state.value = state.value === action.payload ? null : action.payload
     },
     clearWilayah: (state) => {
       state.value = null
