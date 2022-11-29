@@ -11,14 +11,33 @@ function ToggleComponent() {
   const mapVisiblity = useSelector((state) => state.menu.value)
   
   useEffect(() => {
-    fetch('http://127.0.0.1:5173/wilayah_uptd3.geojson')
-      .then(response => response.json())
-      .then(result => {
-        dispatch(addFeatureLayer({...result, color: 'magenta', featureType: 'geojson'}))
+    const requestdata = async () => {
+      const getWilayahData = () => new Promise((resolve, reject) => {
+        fetch('http://127.0.0.1:5173/wilayah_uptd3.geojson')
+          .then(response => response.json())
+          .then(result => resolve(result))
+          .catch(err => reject(err))
       })
-      .then(() => {
+  
+      const getRuasData = () => new Promise((resolve, reject) => {
+        fetch('http://127.0.0.1:5173/ruas_jalan_all.geojson')
+          .then(response => response.json())
+          .then(result => resolve(result))
+          .catch(err => reject(err))
+      })
+      
+      await Promise.all([
+        getWilayahData(),
+        getRuasData()
+      ]).then(result => {
+        const [wilayah, ruas] = result;
+        dispatch(addFeatureLayer({...wilayah, color: 'magenta', featureType: 'geojson'}))
+        dispatch(addFeatureLayer({...ruas, featureType: 'geojson'}))
         dispatch(addFeatureLayer({name: 'marker', featureType: 'marker'}))
       })
+    }
+
+    requestdata().catch(err => console.log(err))
   }, [])
 
   const toggleMenu = () => {
@@ -27,6 +46,10 @@ function ToggleComponent() {
 
   const toggleUptd = () => {
     dispatch(toggleLayer('wilayah_uptd3'))
+  }
+
+  const toggleRuasJalan = () => {
+    dispatch(toggleLayer('ruas_jalan_all'))
   }
 
   const toggleBase = () => {
@@ -58,6 +81,18 @@ function ToggleComponent() {
                 defaultChecked={visible} 
                 value={visible} 
                 onChange={toggleUptd} 
+              />
+            </label>
+          </div>
+          <div className="form-control">
+            <label className="cursor-pointer label">
+              <span className="label-text">Ruas Jalan</span>
+              <input 
+                type="checkbox" 
+                className="toggle" 
+                defaultChecked={visible} 
+                value={visible} 
+                onChange={toggleRuasJalan} 
               />
             </label>
           </div>
