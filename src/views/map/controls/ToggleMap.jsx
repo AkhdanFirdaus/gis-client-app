@@ -32,12 +32,16 @@ function ToggleComponent() {
       const { results } = dataRuasJalan
       dispatch(addFeatureLayer({
         ...results, 
-        color: 'magenta', 
+        color: 'yellow', 
         featureType: 'geojson', 
         name: 'ruas_jalan_all'
       }))
     }
   }, [successRuasJalan, dataRuasJalan])
+
+  useEffect(() => {
+    dispatch(addFeatureLayer({name: 'marker', featureType: 'marker'}))
+  }, [])
   
   const toggleMenu = () => {
     dispatch(toggleMenuAction())
