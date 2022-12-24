@@ -1,6 +1,7 @@
-import { useEffect } from "react"
+import { OSM } from "ol/source"
+import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { addFeatureLayer, toggleLayer } from "../../../features/basemap/basemapSlice"
+import { addFeatureLayer, addTileLayer, toggleLayer } from "../../../features/basemap/basemapSlice"
 import { toggleMenu as toggleMenuAction } from "../../../features/menu/menuSlice"
 import { useGetRuasJalanGeoJSONQuery } from "../../../services/ruasJalan"
 import { useGetWilayahUPTD3JabarQuery } from "../../../services/wilayah"
@@ -14,6 +15,11 @@ function ToggleComponent() {
 
   const { isSuccess: successWilayah, data: dataWilayah } = useGetWilayahUPTD3JabarQuery()
   const { isSuccess: successRuasJalan, data: dataRuasJalan } = useGetRuasJalanGeoJSONQuery()
+
+  useEffect(() => {
+    dispatch(addTileLayer({tile: new OSM(), name: 'baseosm'}))
+    dispatch(addFeatureLayer({name: 'marker', featureType: 'marker'}))
+  }, [])
 
   useEffect(() => {
     if (dataWilayah) {
@@ -39,10 +45,6 @@ function ToggleComponent() {
     }
   }, [successRuasJalan, dataRuasJalan])
 
-  useEffect(() => {
-    dispatch(addFeatureLayer({name: 'marker', featureType: 'marker'}))
-  }, [])
-  
   const toggleMenu = () => {
     dispatch(toggleMenuAction())
   }

@@ -1,26 +1,22 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
-import { OSM } from "ol/source"
 import { useDispatch, useSelector } from "react-redux"
 
-import { initMapRef, removeMapRef, addTileLayer, selectFeature, changeCoordinate } from "../../../features/basemap/basemapSlice"
+import { initMapRef, removeMapRef, selectFeature, changeCoordinate } from "../../../features/basemap/basemapSlice"
 import Popup from "../../components/Popup"
 
 const Map = ({ children, zoom, center }) => {
   const mapRef = useRef()
   const map = useSelector((state) => state.basemap.value.map)
+  const [coordPixel, setCoordPixel] = useState(null)
 
   const dispatch = useDispatch()
 
   useEffect(() => {
     dispatch(initMapRef(mapRef.current))
-    dispatch(addTileLayer({
-      tile: new OSM(),
-      name: 'baseosm'
-    }))
     return () => dispatch(removeMapRef())
   }, [])
-
+  
   useEffect(() => {
     if (!map) return
     map.getView().setZoom(zoom)
@@ -35,14 +31,18 @@ const Map = ({ children, zoom, center }) => {
     if (!map) return
     dispatch(selectFeature())
   }, [])
-  
+
   useEffect(() => {
     if (!map) return
     map.on('click', (e) => {
-      const selected = map.getCoordinateFromPixel(e.pixel)
-      dispatch(changeCoordinate(selected))
+      setCoordPixel(map.getCoordinateFromPixel(e.pixel))
     })
   }, [])
+  
+
+  useEffect(() => {
+    if (coordPixel !== null) dispatch(changeCoordinate(coordPixel))
+  }, [coordPixel])
 
   return (
     <>

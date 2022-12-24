@@ -41,7 +41,13 @@ const selectStyle = (feature) => {
   return selected
 }
 
+const selectFeatures = (features) => {
+  console.log(features)
+}
+
 const selectSingleClick = new Select({style: selectStyle})
+
+const selectCoordinate = new Select({features: selectFeatures})
 
 export const basemapSlice = createSlice({
   name: 'basemap',
@@ -58,24 +64,20 @@ export const basemapSlice = createSlice({
     addTileLayer: (state, action) => {
       const { map } = state.value
       const { tile, name } = action.payload
-      const newlayer = new TileLayer({
-        source: tile
-      })
-      newlayer.set('name', name)
-      map.addLayer(newlayer)
+      const mapIsAvailable = map.getAllLayers().find(item => item.get('name') === name)
+      if (!mapIsAvailable) {
+        const newlayer = new TileLayer({
+          source: tile
+        })
+        newlayer.set('name', name)
+        map.addLayer(newlayer)
+      }
     },
     addFeatureLayer: (state, action) => {
       const { map } = state.value
       const { name, color, featureType, strokeColor = null } = action.payload
 
-      let mapIsAvailable = false 
-      map.getAllLayers().forEach(item => {
-        if (item.get('name') === name) {
-          mapIsAvailable = true
-        } else {
-          mapIsAvailable = false
-        }
-      })
+      const mapIsAvailable = map.getAllLayers().find(item => item.get('name') === name)
 
       if (!mapIsAvailable) {
         const newlayer = new VectorLayer({
@@ -96,28 +98,11 @@ export const basemapSlice = createSlice({
           newlayer.getSource().addFeatures(
             new GeoJSON().readFeatures(action.payload)
           )
-
-          // if (name === 'ruas_jalan_all') {
-          //   const getColor = (val) => {
-          //     if (String(val).includes('TOL')) return 'yellow'
-          //     if (String(val).includes('Nasional')) return 'red'
-          //     return 'blue'
-          //   }
-            
-          //   newlayer.getSource().getFeatures().forEach(item => {
-          //     item.getStyle().setStroke(new Stroke({
-          //       width: 2,
-          //       color: getColor(item.get('Name'))
-          //     }))
-          //   })
-          // }
         }
 
         if (featureType === 'marker') {
+          newlayer.setZIndex(999)
           newlayer.getStyle().setImage(new Icon({
-            anchor: [0.5, 46],
-            anchorXUnits: 'fraction',
-            anchorYUnits: 'pixels',
             src: 'https://openlayers.org/en/latest/examples/data/icon.png'
           }))
         }
@@ -145,14 +130,21 @@ export const basemapSlice = createSlice({
       map.removeInteraction(selectSingleClick)
     },
     changeCoordinate: (state, action) => {
-      const { map } = state.value
       state.value.selectedCoordinate = action.payload
+      const { map } = state.value
+      const markerlayer = map.getAllLayers().find(item => item.get('name') === 'marker')
 
-      const marker = map.getAllLayers().find(layer => layer.get('name') == 'marker')
+      if (markerlayer) {
+        markerlayer.setSource(new VectorSource({
+          features: [
+            new Feature({
+              geometry: new Point(fromLonLat(state.value.selectedCoordinate))
+            })
+          ]
+        }))
+      }
       
-      marker.getSource().addFeature(
-        new Feature({geometry: new Point(fromLonLat(action.payload))})
-      )
+      console.log(map.getAllLayers())
     },
     clearCoordinate: (state) => {
       state.value.selectedCoordinate = []

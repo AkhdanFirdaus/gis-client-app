@@ -1,13 +1,13 @@
 import React from "react"
-import { useGetWilayahDetailQuery } from "../../services/wilayah"
+import { useGetRuasJalanDetailQuery } from "../../services/ruasJalan"
 
-function WilayahDetail(id) {
-  const { error, isLoading, data } = useGetWilayahDetailQuery(id)
+function RuasJalanDetail(id) {
+  const { error, isLoading, data } = useGetRuasJalanDetailQuery(id)
   return (
     <div className="w-full">
       <div className="card bg-white">
         <div className="card-body">
-          <h5>Wilayah Detail</h5>
+          <h5>Ruas Jalan Detail</h5>
           {error ? (
             <>Error happened</>
           ) : isLoading ? (
@@ -15,8 +15,8 @@ function WilayahDetail(id) {
           ) : data ? (
             <>
               <h5>{data.result.nama}</h5>
-              <p>Luas: {data.result.luas}</p>
-              <p>Deskripsi: {data.result.deskripsi ?? 'Tidak ada'}</p>
+              <p>Deskripsi:</p>
+              <p dangerouslySetInnerHTML={{ __html: data.result.deskripsi }} />
             </>
           ) : (
             <>
@@ -29,4 +29,4 @@ function WilayahDetail(id) {
   )
 }
 
-export default WilayahDetail
+export default RuasJalanDetail

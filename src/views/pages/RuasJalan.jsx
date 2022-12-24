@@ -1,10 +1,32 @@
 import React from "react"
+import { useDispatch, useSelector } from "react-redux"
 import { useGetRuasJalanQuery } from "../../services/ruasJalan"
+import { changeRuasJalan } from "../../features/ruas/ruasJalanSlice"
 import Footer from "../components/Footer"
 import Navbar from "../components/Navbar"
 
+function CardRuasJalan({item, handleClick}) {
+  const style = {
+    card: 'card shadow hover:bg-slate-200 hover:transition-opacity hover:cursor-pointer'
+  }
+  const selected = useSelector((state) => state.ruasJalan.value)
+
+  return (
+    <div className={`${style.card} ${selected == item.id ? 'bg-slate-200' : ''}`} onClick={() => handleClick(item.id)}>
+      <div className="card-body">
+        <div className="card-title">{item.nama}</div>
+      </div>
+    </div>
+  )
+}
+
 function RuasJalan() {
   const { isLoading, error, data } = useGetRuasJalanQuery()
+  const dispatch = useDispatch()
+
+  const handleClick = (id) => {
+    dispatch(changeRuasJalan(id))
+  }
 
   return (
     <>
@@ -23,12 +45,7 @@ function RuasJalan() {
             {Array.from(data.results).map(val => {
               return (
                 <li key={val.id}>
-                  <div className="card shadow card-compact">
-                    <div className="card-body">
-                      <div className="card-title">{val.nama}</div>
-                      {/* <p className="card-text" dangerouslySetInnerHTML={{ __html: val.deskripsi }} /> */}
-                    </div>
-                  </div>
+                  <CardRuasJalan item={val} handleClick={handleClick} />
                 </li>
               )
             })}
