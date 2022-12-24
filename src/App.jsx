@@ -10,9 +10,10 @@ import ToggleMap from "./views/map/controls/ToggleMap"
 import { useSelector } from 'react-redux'
 
 function LeftComponent() {
+  const selectedWilayah = useSelector((state) => state.wilayah.value)
   return (
     <div className='absolute left-0 bottom-0 space-y-3 p-5 md:w-1/3 lg:1/4'>
-      <WilayahDetail />
+      {selectedWilayah && <WilayahDetail id={selectedWilayah} />}
       <SelectedCoordinate />
       <ToggleMap />
     </div>

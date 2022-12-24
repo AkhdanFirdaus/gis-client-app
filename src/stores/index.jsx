@@ -3,6 +3,7 @@ import { setupListeners } from "@reduxjs/toolkit/dist/query"
 import basemapReducer from "../features/basemap/basemapSlice"
 import menuReducer from "../features/menu/menuSlice"
 import wilayahReducer from "../features/wilayah/wilayahSlice"
+import { ruasJalanApi } from "../services/ruasJalan"
 import { wilayahApi } from "../services/wilayah"
 
 export const store = configureStore({
@@ -11,8 +12,11 @@ export const store = configureStore({
     wilayah: wilayahReducer,
     basemap: basemapReducer,
     [wilayahApi.reducerPath]: wilayahApi.reducer,
+    [ruasJalanApi.reducerPath]: ruasJalanApi.reducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: false}).concat(wilayahApi.middleware)
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: false})
+    .concat(wilayahApi.middleware)
+    .concat(ruasJalanApi.middleware)
 })
 
 // setupListeners(store.dispatch)

@@ -1,17 +1,19 @@
-import React from "react"
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import { useGetCountRuasJalanQuery } from "../../services/ruasJalan"
+import { useGetCountWilayahQuery } from "../../services/wilayah"
 import Footer from "../components/Footer"
 import Header from "../components/Header"
 import Navbar from "../components/Navbar"
 
-function Card({props}) {
+function Card({link, leading, title}) {
   return (
     <>
-      <Link to={props.link}>
-        <div className='card bg-white shadow'>
+      <Link to={link}>
+        <div className='card shadow'>
           <div className='card-body items-center text-center'>
-            <h2 className="card-title">{props.leading}</h2>
-            <p>{props.title}</p>
+            <h2 className="card-title">{leading}</h2>
+            <p>{title}</p>
           </div>
         </div>
       </Link>
@@ -20,19 +22,21 @@ function Card({props}) {
 }
 
 function Overview() {
+  const { data: dataWilayah } = useGetCountWilayahQuery()
+  const { data: dataRuasJalan } = useGetCountRuasJalanQuery()
   const datalist = [
     {
-      leading: 24,
+      leading: 0,
       title: "Wilayah",
       link: "/wilayah"
     },
     {
-      leading: 123,
+      leading: 0,
       title: "Ruas Jalan",
       link: "/ruas-jalan"
     },
     {
-      leading: 4,
+      leading: 0,
       title: "Laporan",
       link: "/laporan"
     },
@@ -42,6 +46,7 @@ function Overview() {
       link: "/buat-laporan"
     }
   ]
+
   return (
     <>
       <div className="h-full flex flex-col justify-between">
@@ -50,9 +55,10 @@ function Overview() {
           <Header title='Rata-Rata' subtitle='Indeks Kondisi Perkerasan' />
           <div className='mt-4'>
             <div className="grid grid-cols-2 gap-4">
-              {datalist.map(item => {
-                return <Card key={item.link} props={item} />
-              })}
+              <Card link={datalist[0].link} title={datalist[0].title} leading={dataWilayah && dataWilayah.result} />
+              <Card link={datalist[1].link} title={datalist[1].title} leading={dataRuasJalan && dataRuasJalan.result} />
+              <Card link={datalist[2].link} title={datalist[2].title} leading={datalist[2].leading} />
+              <Card link={datalist[3].link} title={datalist[3].title} leading={datalist[3].leading} />
             </div>
           </div>
         </main>

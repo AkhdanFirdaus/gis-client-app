@@ -2,6 +2,8 @@ import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { addFeatureLayer, toggleLayer } from "../../../features/basemap/basemapSlice"
 import { toggleMenu as toggleMenuAction } from "../../../features/menu/menuSlice"
+import { useGetRuasJalanGeoJSONQuery } from "../../../services/ruasJalan"
+import { useGetWilayahUPTD3JabarQuery } from "../../../services/wilayah"
 
 
 function ToggleComponent() {
@@ -9,37 +11,34 @@ function ToggleComponent() {
 
   const { visible } = useSelector((state) => state.basemap.value)
   const mapVisiblity = useSelector((state) => state.menu.value)
-  
+
+  const { isSuccess: successWilayah, data: dataWilayah } = useGetWilayahUPTD3JabarQuery()
+  const { isSuccess: successRuasJalan, data: dataRuasJalan } = useGetRuasJalanGeoJSONQuery()
+
   useEffect(() => {
-    const requestdata = async () => {
-      const getWilayahData = () => new Promise((resolve, reject) => {
-        fetch('http://127.0.0.1:5173/wilayah_uptd3.geojson')
-          .then(response => response.json())
-          .then(result => resolve(result))
-          .catch(err => reject(err))
-      })
-  
-      const getRuasData = () => new Promise((resolve, reject) => {
-        fetch('http://127.0.0.1:5173/ruas_jalan_all.geojson')
-          .then(response => response.json())
-          .then(result => resolve(result))
-          .catch(err => reject(err))
-      })
-      
-      await Promise.all([
-        getWilayahData(),
-        getRuasData()
-      ]).then(result => {
-        const [wilayah, ruas] = result;
-        dispatch(addFeatureLayer({...wilayah, color: 'magenta', featureType: 'geojson'}))
-        dispatch(addFeatureLayer({...ruas, featureType: 'geojson'}))
-        dispatch(addFeatureLayer({name: 'marker', featureType: 'marker'}))
-      })
+    if (dataWilayah) {
+      const { results } = dataWilayah
+      dispatch(addFeatureLayer({
+        ...results, 
+        color: 'magenta', 
+        featureType: 'geojson', 
+        name: 'wilayah_uptd3'
+      }))
     }
+  }, [successWilayah, dataWilayah])
 
-    requestdata().catch(err => console.log(err))
-  }, [])
-
+  useEffect(() => {
+    if (dataRuasJalan) {
+      const { results } = dataRuasJalan
+      dispatch(addFeatureLayer({
+        ...results, 
+        color: 'magenta', 
+        featureType: 'geojson', 
+        name: 'ruas_jalan_all'
+      }))
+    }
+  }, [successRuasJalan, dataRuasJalan])
+  
   const toggleMenu = () => {
     dispatch(toggleMenuAction())
   }

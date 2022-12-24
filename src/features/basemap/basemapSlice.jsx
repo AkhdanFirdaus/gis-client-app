@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { View, Map, Feature } from 'ol'
+import { View, Map, Feature, Overlay } from 'ol'
 import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 import TileLayer from "ol/layer/Tile"
@@ -66,7 +66,7 @@ export const basemapSlice = createSlice({
     },
     addFeatureLayer: (state, action) => {
       const { map } = state.value
-      const { name, color, featureType } = action.payload
+      const { name, color, featureType, strokeColor = null } = action.payload
 
       let mapIsAvailable = false 
       map.getAllLayers().forEach(item => {
@@ -87,7 +87,7 @@ export const basemapSlice = createSlice({
             }),
             stroke: new Stroke({
               width: 1,
-              color: 'white'
+              color: strokeColor ?? 'white'
             })
           })
         })
@@ -96,13 +96,29 @@ export const basemapSlice = createSlice({
           newlayer.getSource().addFeatures(
             new GeoJSON().readFeatures(action.payload)
           )
+
+          // if (name === 'ruas_jalan_all') {
+          //   const getColor = (val) => {
+          //     if (String(val).includes('TOL')) return 'yellow'
+          //     if (String(val).includes('Nasional')) return 'red'
+          //     return 'blue'
+          //   }
+            
+          //   newlayer.getSource().getFeatures().forEach(item => {
+          //     item.getStyle().setStroke(new Stroke({
+          //       width: 2,
+          //       color: getColor(item.get('Name'))
+          //     }))
+          //   })
+          // }
         }
 
         if (featureType === 'marker') {
-          // TODO WHEN VECTOR
           newlayer.getStyle().setImage(new Icon({
-            anchor: [0.5, 1],
-            src: 'https://github.com/openlayers/openlayers/blob/v3.20.1/examples/resources/logo-70x70.png?raw=true'
+            anchor: [0.5, 46],
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'pixels',
+            src: 'https://openlayers.org/en/latest/examples/data/icon.png'
           }))
         }
         newlayer.set('name', name)
@@ -132,17 +148,27 @@ export const basemapSlice = createSlice({
       const { map } = state.value
       state.value.selectedCoordinate = action.payload
 
-      const marker = map.getAllLayers().filter(layer => {
-        if (layer.get('name') == 'marker') return layer
-        else return null
-      })
+      const marker = map.getAllLayers().find(layer => layer.get('name') == 'marker')
       
-      marker[0].getSource().addFeatures(
-        new Feature(new Point(fromLonLat(action.payload)))
+      marker.getSource().addFeature(
+        new Feature({geometry: new Point(fromLonLat(action.payload))})
       )
     },
     clearCoordinate: (state) => {
       state.value.selectedCoordinate = []
+    },
+    addOverlay: (state, action) => {
+      const { map } = state.value
+      const overlay = new Overlay({
+        element: document.querySelector('#popup-overlay'),
+        autoPan: {
+          animation: {
+            duration: 250
+          }
+        }
+      })
+      overlay.setPosition(action.payload)
+      map.addOverlay(overlay)
     }
   }
 })
@@ -157,7 +183,8 @@ export const {
   selectFeature,
   removeInteraction,
   changeCoordinate,
-  clearCoordinate
+  clearCoordinate,
+  addOverlay
 } = basemapSlice.actions
 
 export default basemapSlice.reducer

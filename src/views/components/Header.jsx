@@ -2,7 +2,7 @@ import React from "react";
 
 function Header({title, subtitle}) {
   return (
-    <div className="card lg:card-side bg-white shadow">
+    <div className="card lg:card-side shadow">
       <figure><img src="https://placeimg.com/140/140/arch" alt="Album"/></figure>
       <div className="card-body justify-center items-end">
         <p>{subtitle}</p>
