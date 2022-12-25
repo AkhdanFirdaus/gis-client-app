@@ -8,6 +8,15 @@ function SelectedCoordinate() {
   const { selectedCoordinate } = useSelector((state) => state.basemap.value)
   const [isVisible, setVisible] = useState(false)
 
+  const handleOverlayClick = () => {
+    const id = Array.from(selectedCoordinate).join(',')
+    dispatch(addOverlay({position: selectedCoordinate, popupId: id}))
+  }
+
+  const handleClearCoordinate = () => {
+    dispatch(clearCoordinate())
+  }
+
   useEffect(() => {
     setVisible(selectedCoordinate.length > 1)
   }, [selectedCoordinate])
@@ -28,8 +37,8 @@ function SelectedCoordinate() {
             </ul>
           </div>
           <div className="flex justify-start align-middle space-x-2">
-            <button className="btn btn-primary" onClick={() => dispatch(addOverlay(selectedCoordinate))}>Add Marker</button>
-            <button className="btn btn-outline btn-error" onClick={() => dispatch(clearCoordinate())}>Cancel</button>
+            <button className="btn btn-primary" onClick={handleOverlayClick}>Add Detail</button>
+            <button className="btn btn-outline btn-error" onClick={handleClearCoordinate}>Cancel</button>
           </div>
         </div>
       </div>

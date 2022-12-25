@@ -9,22 +9,6 @@ import GeoJSON from "ol/format/GeoJSON"
 import { Point } from 'ol/geom'
 import { fromLonLat } from 'ol/proj'
 
-const initialState = {
-  value: {
-    visible: true,
-    selectedCoordinate: [],
-    map: new Map({
-      layers: [],
-      view: new View({
-        projection: 'EPSG:4326',
-        center: [107.7177, -6.9254],
-        zoom: 9
-      }),
-      controls: []
-    })
-  }
-}
-
 const selected = new Style({
   fill: new Fill({
     color: '#ffeeee'
@@ -41,13 +25,23 @@ const selectStyle = (feature) => {
   return selected
 }
 
-const selectFeatures = (features) => {
-  console.log(features)
-}
-
 const selectSingleClick = new Select({style: selectStyle})
 
-const selectCoordinate = new Select({features: selectFeatures})
+const initialState = {
+  value: {
+    visible: true,
+    selectedCoordinate: [],
+    map: new Map({
+      layers: [],
+      view: new View({
+        projection: 'EPSG:4326',
+        center: [107.7177, -6.9254],
+        zoom: 9
+      }),
+      controls: []
+    })
+  }
+}
 
 export const basemapSlice = createSlice({
   name: 'basemap',
@@ -132,8 +126,8 @@ export const basemapSlice = createSlice({
     changeCoordinate: (state, action) => {
       state.value.selectedCoordinate = action.payload
       const { map } = state.value
-      const markerlayer = map.getAllLayers().find(item => item.get('name') === 'marker')
-
+      const markerlayer = map.getLayers().getArray().find(layer => layer.get('name') === 'marker')
+      console.log(markerlayer)
       if (markerlayer) {
         markerlayer.setSource(new VectorSource({
           features: [
@@ -143,24 +137,32 @@ export const basemapSlice = createSlice({
           ]
         }))
       }
-      
-      console.log(map.getAllLayers())
     },
     clearCoordinate: (state) => {
       state.value.selectedCoordinate = []
     },
     addOverlay: (state, action) => {
       const { map } = state.value
-      const overlay = new Overlay({
+      const { popupId, position } = action.payload
+      
+      const popupOverlay = new Overlay({
+        id: popupId,
         element: document.querySelector('#popup-overlay'),
         autoPan: {
           animation: {
             duration: 250
           }
-        }
+        },
       })
-      overlay.setPosition(action.payload)
-      map.addOverlay(overlay)
+      
+      popupOverlay.setPosition(position)
+      map.addOverlay(popupOverlay)
+    },
+    removeOverlay: (state, action) => {
+      const { map } = state.value
+      const { popupId } = action.payload
+      const popup = map.getOverlayById(popupId)
+      popup.setPosition(undefined)
     }
   }
 })
@@ -176,7 +178,8 @@ export const {
   removeInteraction,
   changeCoordinate,
   clearCoordinate,
-  addOverlay
+  addOverlay,
+  removeOverlay
 } = basemapSlice.actions
 
 export default basemapSlice.reducer

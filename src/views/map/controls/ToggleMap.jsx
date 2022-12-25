@@ -12,6 +12,7 @@ function ToggleComponent() {
 
   const { visible } = useSelector((state) => state.basemap.value)
   const mapVisiblity = useSelector((state) => state.menu.value)
+  const [allowClickWilayah, setAllowClickWilayah] = useState(true)
 
   const { isSuccess: successWilayah, data: dataWilayah } = useGetWilayahUPTD3JabarQuery()
   const { isSuccess: successRuasJalan, data: dataRuasJalan } = useGetRuasJalanGeoJSONQuery()
@@ -80,6 +81,7 @@ function ToggleComponent() {
           <div className="form-control">
             <label className="cursor-pointer label">
               <span className="label-text">Wilayah UPTD 3</span>
+              <input type="checkbox" checked={allowClickWilayah} className="checkbox" onChange={() => setAllowClickWilayah(!allowClickWilayah)} />
               <input 
                 type="checkbox" 
                 className="toggle" 
