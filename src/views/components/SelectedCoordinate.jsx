@@ -1,18 +1,12 @@
 import React from "react"
 import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { addOverlay } from "../../features/basemap/basemapSlice"
 import { clearCoordinate } from "../../features/controls/coordinateSlice"
 
 function SelectedCoordinate() {
   const dispatch = useDispatch()
-  const selectedCoordinate = useSelector((state) => state.coordinate.value)
+  const { selectedCoordinate } = useSelector((state) => state.coordinate.value)
   const [isVisible, setVisible] = useState(false)
-
-  const handleOverlayClick = () => {
-    const id = Array.from(selectedCoordinate).join(',')
-    dispatch(addOverlay({coordinate: selectedCoordinate, popupId: id}))
-  }
 
   const handleClearCoordinate = () => {
     dispatch(clearCoordinate())
@@ -28,18 +22,17 @@ function SelectedCoordinate() {
     <div className="w-full">
       <div className="card bg-white">
         <div className="card-body">
-          <h6 className="font-medium">
+          <h6 className="font-medium flex justify-between">
             <span>Selected Coord</span>
+            <span className="cursor-pointer" tabIndex={0} onClick={handleClearCoordinate}>x</span>
           </h6>
           <div className="space-y-3">
+            <p id="namaRuas"></p>
+            <p id="jarakRuas"></p>
             <ul className="list-none">
               <li>Longitude: {selectedCoordinate[0]}</li>
               <li>Latitude: {selectedCoordinate[1]}</li>
             </ul>
-          </div>
-          <div className="flex justify-start align-middle space-x-2">
-            <button className="btn btn-primary" onClick={handleOverlayClick}>Add Detail</button>
-            <button className="btn btn-outline btn-error" onClick={handleClearCoordinate}>Cancel</button>
           </div>
         </div>
       </div>

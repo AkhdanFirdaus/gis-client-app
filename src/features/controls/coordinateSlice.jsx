@@ -1,7 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  value: []
+  value: {
+    currentCoordinateHasPoint: false,
+    selectedCoordinate: [],
+    selectedLaporan: null
+  }
 }
 
 export const coordinateSlice = createSlice({
@@ -9,22 +13,19 @@ export const coordinateSlice = createSlice({
   initialState,
   reducers: {
     changeCoordinate: (state, action) => {
-      const { coordinate } = action.payload
-      state.value = coordinate
-      // const { map } = state.value
-      // const markerlayer = map.getLayers().getArray().find(layer => layer.get('name') === 'marker')
-      // if (markerlayer) {
-      //   markerlayer.setSource(new VectorSource({
-      //     features: [
-      //       new Feature({
-      //         geometry: new Point(fromLonLat(state.value.selectedCoordinate))
-      //       })
-      //     ]
-      //   }))
-      // }
+      const { coordinate, hasPoint = false, laporanId = null } = action.payload
+      state.value = {
+        currentCoordinateHasPoint: hasPoint,
+        selectedCoordinate: coordinate,
+        selectedLaporan: laporanId,
+      }
     },
     clearCoordinate: (state) => {
-      state.value = []
+      state.value = {
+        currentCoordinateHasPoint: false,
+        selectedCoordinate: [],
+        selectedLaporan: null,
+      }
     },
   }
 })

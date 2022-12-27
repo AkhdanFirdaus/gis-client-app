@@ -1,4 +1,4 @@
-import React from "react"
+import { useEffect, useState } from "react"
 import { useGetLaporanQuery } from "../../services/laporan"
 import Footer from "../components/Footer"
 import Navbar from "../components/Navbar"
@@ -9,7 +9,7 @@ function LaporanCard({data}) {
       <div className="card shadow card-compact">
         <div className="card-body">
           <div className="card-title">{data.deskripsi}</div>
-          <div className="card-text">{data.koordinat}</div>
+          <div className="card-text">{String(JSON.parse(data.koordinat).coordinates)}</div>
         </div>
       </div>
     </li>
@@ -18,9 +18,16 @@ function LaporanCard({data}) {
 
 function Laporan() {
   const {isLoading, error, data} = useGetLaporanQuery()
+  const [count, setCount] = useState(0)
+
+  useEffect(() => {
+    if (data) {
+      setCount(data.results.length)
+    }
+  }, [data])
   return (
     <>
-      <Navbar hasBack={true} title='Laporan' />
+      <Navbar hasBack={true} title={`${count} Laporan`} />
       <div>
       <input type="text" placeholder="Type here" className="input w-full input-bordered bg-white"/>
       </div>

@@ -6,6 +6,9 @@ import TileLayer from "ol/layer/Tile"
 import {Style, Fill, Stroke, Icon} from 'ol/style'
 import GeoJSON from "ol/format/GeoJSON"
 import { selectFeatureClick, selectLineClick } from '../../views/map/controls/interactions'
+import Point from 'ol/geom/Point'
+import { Feature } from 'ol'
+import { fromLonLat } from 'ol/proj'
 
 const initialState = {
   value: new Map({
@@ -43,6 +46,35 @@ export const basemapSlice = createSlice({
         map.addLayer(newlayer)
       }
     },
+    addPointLayer: (state, action) => {
+      const map = state.value
+      const { name, color, data } = action.payload
+
+      const mapIsAvailable = map.getAllLayers().find(item => item.get('name') === name)
+
+      if (!mapIsAvailable) {
+        // 'https://openlayers.org/en/latest/examples/data/icon.png',
+        const newlayer = new VectorLayer({
+          zIndex: map.getAllLayers().length * 4,
+          source: new VectorSource(),
+          style: new Style({
+            image: new Icon({
+              src: '/marker.png',
+              scale: .04,
+            })
+          })
+        })
+
+        if (data) {
+          newlayer.getSource().addFeatures(
+            new GeoJSON().readFeatures(data)
+          )
+
+        }
+
+        map.addLayer(newlayer)
+      }
+    },
     addFeatureLayer: (state, action) => {
       const map = state.value
       const { name, color, featureType, strokeColor = null, width = 1 } = action.payload
@@ -68,13 +100,6 @@ export const basemapSlice = createSlice({
           newlayer.getSource().addFeatures(
             new GeoJSON().readFeatures(action.payload)
           )
-        }
-
-        if (featureType === 'marker') {
-          newlayer.setZIndex(999)
-          newlayer.getStyle().setImage(new Icon({
-            src: 'https://openlayers.org/en/latest/examples/data/icon.png'
-          }))
         }
 
         newlayer.set('name', name)
@@ -139,6 +164,7 @@ export const {
   initMapRef, 
   removeMapRef,
   addTileLayer, 
+  addPointLayer,
   addFeatureLayer,
   toggleLayer,
   toggleFeatureOrLayerInteraction,

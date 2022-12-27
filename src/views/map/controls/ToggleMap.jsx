@@ -1,9 +1,10 @@
 import { OSM } from "ol/source"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { addFeatureLayer, addTileLayer, toggleLayer } from "../../../features/basemap/basemapSlice"
+import { addFeatureLayer, addPointLayer, addTileLayer, toggleLayer } from "../../../features/basemap/basemapSlice"
 import { toggleClickFeatureOrLine, toggleMapLayersVisible } from "../../../features/controls/controlSlice"
 import { toggleMenu as toggleMenuAction } from "../../../features/menu/menuSlice"
+import { useGetLaporanGeoJSONQuery, useGetLaporanQuery } from "../../../services/laporan"
 import { useGetRuasJalanGeoJSONQuery } from "../../../services/ruasJalan"
 import { useGetWilayahUPTD3JabarQuery } from "../../../services/wilayah"
 
@@ -66,6 +67,7 @@ function ToggleComponent() {
 
   const { isSuccess: successWilayah, data: dataWilayah } = useGetWilayahUPTD3JabarQuery()
   const { isSuccess: successRuasJalan, data: dataRuasJalan } = useGetRuasJalanGeoJSONQuery()
+  const { isSuccess: successLaporan, data: dataLaporan } = useGetLaporanGeoJSONQuery()
   // const { isSuccess: successDirection, data: dataDirection } = useGetDirectionQuery()
 
   useEffect(() => {
@@ -101,6 +103,18 @@ function ToggleComponent() {
       dispatch(toggleMapLayersVisible({layerName}))
     }
   }, [successRuasJalan, dataRuasJalan])
+
+  useEffect(() => {
+    if (dataLaporan) {
+      const { results } = dataLaporan
+      const layerName = 'laporan_point'
+      dispatch(addPointLayer({
+        data: results, 
+        name: layerName
+      }))
+      dispatch(toggleMapLayersVisible({layerName}))
+    }
+  }, [successLaporan, dataLaporan])
 
   // useEffect(() => {
   //   if (dataDirection) {

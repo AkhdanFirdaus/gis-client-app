@@ -4,11 +4,16 @@ export const laporanApi = createApi({
   reducerPath: 'laporanApi',
   baseQuery: fetchBaseQuery({baseUrl: 'http://127.0.0.1:8888/'}),
   endpoints: (builder) => ({
+    getLaporanGeoJSON: builder.query({
+      query: (_) => 'laporan?type=geojson',
+    }),
     getLaporan: builder.query({
       query: (_) => 'laporan',
     }),
-    getLaporanDetail: builder.query({
-      query: ({id}) => `laporan/${id}`
+    getLaporanDetail: builder.mutation({
+      query: ({uid}) => ({
+        url: `laporan/${uid}`
+      })
     }),
     getCountLaporan: builder.query({
       query: (_) => 'laporan/count'
@@ -25,8 +30,9 @@ export const laporanApi = createApi({
 })
 
 export const { 
+  useGetLaporanGeoJSONQuery,
   useGetLaporanQuery,
-  useGetLaporanDetailQuery,
+  useGetLaporanDetailMutation,
   useGetCountLaporanQuery,
   usePostLaporanMutation
 } = laporanApi

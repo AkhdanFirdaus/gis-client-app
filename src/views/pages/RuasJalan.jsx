@@ -1,4 +1,4 @@
-import React from "react"
+import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useGetRuasJalanQuery } from "../../services/ruasJalan"
 import { changeRuasJalan } from "../../features/ruas/ruasJalanSlice"
@@ -22,15 +22,22 @@ function CardRuasJalan({item, handleClick}) {
 
 function RuasJalan() {
   const { isLoading, error, data } = useGetRuasJalanQuery()
+  const [count, setCount] = useState(0)
   const dispatch = useDispatch()
 
   const handleClick = (id) => {
     dispatch(changeRuasJalan(id))
   }
 
+  useEffect(() => {
+    if (data) {
+      setCount(data.results.length)
+    }
+  }, [data])
+
   return (
     <>
-      <Navbar hasBack={true} title='Ruas Jalan' />
+      <Navbar hasBack={true} title={`${count} Ruas Jalan`} />
       <div>
         <input type="text" placeholder="Type here" className="input w-full input-bordered"/>
       </div>

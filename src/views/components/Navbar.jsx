@@ -9,16 +9,10 @@ function Navbar({ hasBack = false, title }) {
   return (
     <div className='navbar'>
       <div className='flex-none'>
-        {hasBack ? (
+        {hasBack && (
           <button className="btn btn-ghost" onClick={() => navigate(-1)}>
             <FontAwesomeIcon icon={faChevronLeft} />
           </button>
-        ) : (
-          <label className="btn btn-ghost btn-circle avatar">
-            <div className="w-10 rounded-full">
-              <img src="https://placeimg.com/80/80/people" />
-            </div>
-          </label>
         )}
         
       </div>

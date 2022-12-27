@@ -1,4 +1,3 @@
-import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { useDispatch, useSelector } from "react-redux"
@@ -39,8 +38,7 @@ function Wilayah() {
   return (
     <>
       <div className="space-y-4">
-        <Navbar hasBack={true} title='Wilayah' />
-        <Header title='Wilayah' subtitle={count} />
+        <Navbar hasBack={true} title={`${count} Wilayah`} />
         <input type="text" placeholder="Type here" className="input w-full input-bordered bg-white"/>
         <div className="">
           {error ? (
