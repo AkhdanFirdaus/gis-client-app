@@ -1,16 +1,17 @@
 import React from "react"
 import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { clearCoordinate, addOverlay } from "../../features/basemap/basemapSlice"
+import { addOverlay } from "../../features/basemap/basemapSlice"
+import { clearCoordinate } from "../../features/controls/coordinateSlice"
 
 function SelectedCoordinate() {
   const dispatch = useDispatch()
-  const { selectedCoordinate } = useSelector((state) => state.basemap.value)
+  const selectedCoordinate = useSelector((state) => state.coordinate.value)
   const [isVisible, setVisible] = useState(false)
 
   const handleOverlayClick = () => {
     const id = Array.from(selectedCoordinate).join(',')
-    dispatch(addOverlay({position: selectedCoordinate, popupId: id}))
+    dispatch(addOverlay({coordinate: selectedCoordinate, popupId: id}))
   }
 
   const handleClearCoordinate = () => {

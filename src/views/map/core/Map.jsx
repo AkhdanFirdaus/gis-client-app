@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from "react"
 
 import { useDispatch, useSelector } from "react-redux"
 
-import { initMapRef, removeMapRef, selectFeature, changeCoordinate } from "../../../features/basemap/basemapSlice"
+import { initMapRef, removeFeatureInteraction, removeLineInteraction, removeMapRef, selectFeature, selectLine } from "../../../features/basemap/basemapSlice"
+import { changeCoordinate } from "../../../features/controls/coordinateSlice"
 import Popup from "../../components/Popup"
 
 const Map = ({ children, zoom, center }) => {
   const mapRef = useRef()
-  const map = useSelector((state) => state.basemap.value.map)
+  const map = useSelector((state) => state.basemap.value)
+  const { clickableFeature, clickableLine } = useSelector(state => state.controls.value)
   const [coordPixel, setCoordPixel] = useState(null)
 
   const dispatch = useDispatch()
@@ -29,8 +31,21 @@ const Map = ({ children, zoom, center }) => {
 
   useEffect(() => {
     if (!map) return
-    dispatch(selectFeature())
-  }, [])
+    if (clickableFeature) {
+      dispatch(selectFeature())
+    } else {
+      dispatch(removeFeatureInteraction())
+    }
+  }, [clickableFeature])
+
+  useEffect(() => {
+    if (!map) return
+    if (clickableLine) {
+      dispatch(selectLine())
+    } else {
+      dispatch(removeLineInteraction())
+    }
+  }, [clickableLine])
 
   useEffect(() => {
     if (!map) return
@@ -38,10 +53,9 @@ const Map = ({ children, zoom, center }) => {
       setCoordPixel(map.getCoordinateFromPixel(e.pixel))
     })
   }, [])
-  
 
   useEffect(() => {
-    if (coordPixel !== null) dispatch(changeCoordinate(coordPixel))
+    if (coordPixel !== null) dispatch(changeCoordinate({coordinate: coordPixel}))
   }, [coordPixel])
 
   return (

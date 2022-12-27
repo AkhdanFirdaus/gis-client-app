@@ -1,13 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { View, Map, Feature, Overlay } from 'ol'
+import { View, Map, Overlay } from 'ol'
 import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 import TileLayer from "ol/layer/Tile"
 import {Style, Fill, Stroke, Icon} from 'ol/style'
 import Select from "ol/interaction/Select"
 import GeoJSON from "ol/format/GeoJSON"
-import { Point } from 'ol/geom'
-import { fromLonLat } from 'ol/proj'
 
 const selected = new Style({
   fill: new Fill({
@@ -19,28 +17,28 @@ const selected = new Style({
   })
 })
 
-const selectStyle = (feature) => {
+const selectFeatureClick = new Select({style: (feature) => {
   const color = '#eeeeee'
   selected.getFill().setColor(color)
   return selected
-}
+}})
 
-const selectSingleClick = new Select({style: selectStyle})
+const selectLineClick = new Select({style: (feature) => {
+  const color = 'green'
+  selected.getStroke().setColor(color)
+  return selected
+}})
 
 const initialState = {
-  value: {
-    visible: true,
-    selectedCoordinate: [],
-    map: new Map({
-      layers: [],
-      view: new View({
-        projection: 'EPSG:4326',
-        center: [107.7177, -6.9254],
-        zoom: 9
-      }),
-      controls: []
-    })
-  }
+  value: new Map({
+    layers: [],
+    view: new View({
+      projection: 'EPSG:4326',
+      center: [107.7177, -6.9254],
+      zoom: 9
+    }),
+    controls: []
+  })
 }
 
 export const basemapSlice = createSlice({
@@ -48,15 +46,15 @@ export const basemapSlice = createSlice({
   initialState,
   reducers: {
     initMapRef: (state, action) => {
-      const { map } = state.value
+      const map = state.value
       map.setTarget(action.payload)
     },
     removeMapRef: (state) => {
-      const { map } = state.value
+      const map = state.value
       map.setTarget(undefined)
     },
     addTileLayer: (state, action) => {
-      const { map } = state.value
+      const map = state.value
       const { tile, name } = action.payload
       const mapIsAvailable = map.getAllLayers().find(item => item.get('name') === name)
       if (!mapIsAvailable) {
@@ -68,7 +66,7 @@ export const basemapSlice = createSlice({
       }
     },
     addFeatureLayer: (state, action) => {
-      const { map } = state.value
+      const map = state.value
       const { name, color, featureType, strokeColor = null } = action.payload
 
       const mapIsAvailable = map.getAllLayers().find(item => item.get('name') === name)
@@ -100,50 +98,38 @@ export const basemapSlice = createSlice({
             src: 'https://openlayers.org/en/latest/examples/data/icon.png'
           }))
         }
+
         newlayer.set('name', name)
         map.addLayer(newlayer)
       }
     },
-    toggleMap: (state) => {
-      state.value.visible = !state.value.visible
-    },
     toggleLayer: (state, action) => {
-      const { map } = state.value
-      const name = action.payload
+      const map = state.value
+      const { name } = action.payload
       
       map.getLayers().forEach(layer => {
         layer.setVisible(layer.get('name') == name ? !layer.getVisible() : layer.getVisible())
       })
     },
     selectFeature: (state) => {
-      const { map } = state.value
-      map.addInteraction(selectSingleClick)
+      const map = state.value
+      map.addInteraction(selectFeatureClick)
     },
-    removeInteraction: (state) => {
-      const { map } = state.value
-      map.removeInteraction(selectSingleClick)
+    removeFeatureInteraction: (state) => {
+      const map = state.value
+      map.removeInteraction(selectFeatureClick)
     },
-    changeCoordinate: (state, action) => {
-      state.value.selectedCoordinate = action.payload
-      const { map } = state.value
-      const markerlayer = map.getLayers().getArray().find(layer => layer.get('name') === 'marker')
-      console.log(markerlayer)
-      if (markerlayer) {
-        markerlayer.setSource(new VectorSource({
-          features: [
-            new Feature({
-              geometry: new Point(fromLonLat(state.value.selectedCoordinate))
-            })
-          ]
-        }))
-      }
+    selectLine: (state) => {
+      const map = state.value
+      map.addInteraction(selectLineClick)
     },
-    clearCoordinate: (state) => {
-      state.value.selectedCoordinate = []
+    removeLineInteraction: (state) => {
+      const map = state.value
+      map.removeInteraction(selectLineClick)
     },
     addOverlay: (state, action) => {
-      const { map } = state.value
-      const { popupId, position } = action.payload
+      const map = state.value
+      const { popupId, coordinate } = action.payload
       
       const popupOverlay = new Overlay({
         id: popupId,
@@ -155,11 +141,11 @@ export const basemapSlice = createSlice({
         },
       })
       
-      popupOverlay.setPosition(position)
+      popupOverlay.setPosition(coordinate)
       map.addOverlay(popupOverlay)
     },
     removeOverlay: (state, action) => {
-      const { map } = state.value
+      const map = state.value
       const { popupId } = action.payload
       const popup = map.getOverlayById(popupId)
       popup.setPosition(undefined)
@@ -170,14 +156,13 @@ export const basemapSlice = createSlice({
 export const { 
   initMapRef, 
   removeMapRef,
-  toggleMap, 
   addTileLayer, 
   addFeatureLayer,
   toggleLayer,
   selectFeature,
-  removeInteraction,
-  changeCoordinate,
-  clearCoordinate,
+  removeFeatureInteraction,
+  selectLine,
+  removeLineInteraction,
   addOverlay,
   removeOverlay
 } = basemapSlice.actions

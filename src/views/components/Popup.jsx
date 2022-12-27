@@ -3,11 +3,13 @@ import { removeOverlay } from "../../features/basemap/basemapSlice"
 
 export default function Popup({name="Name", description="Desc"}) {
   const dispatch = useDispatch()
-  const { selectedCoordinate } = useSelector((state) => state.basemap.value)
+  const selectedCoordinate = useSelector((state) => state.coordinate.value)
+  
   const handleClose = () => {
     const id = Array.from(selectedCoordinate).join(',')
     dispatch(removeOverlay({popupId: id}))
   }
+
   return (
     <div className="card bg-white">
       <div className="card-body">

@@ -15,6 +15,9 @@ export const ruasJalanApi = createApi({
     }),
     getCountRuasJalan: builder.query({
       query: (_) => 'ruas-jalan/count'
+    }),
+    getDirection: builder.query({
+      query: (_) => 'https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf62482e90325d33734b4193345a80836635aa&start=107.6187558,-6.9021856&end=107.579225,-6.446432'
     })
   })
 })
@@ -23,5 +26,6 @@ export const {
   useGetRuasJalanGeoJSONQuery,
   useGetRuasJalanQuery,
   useGetRuasJalanDetailQuery,
-  useGetCountRuasJalanQuery
+  useGetCountRuasJalanQuery,
+  useGetDirectionQuery
 } = ruasJalanApi
