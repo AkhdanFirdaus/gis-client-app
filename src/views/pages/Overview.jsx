@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import { useGetCountLaporanQuery } from "../../services/laporan"
 import { useGetCountRuasJalanQuery } from "../../services/ruasJalan"
 import { useGetCountWilayahQuery } from "../../services/wilayah"
 import Footer from "../components/Footer"
@@ -24,6 +25,7 @@ function Card({link, leading, title}) {
 function Overview() {
   const { data: dataWilayah } = useGetCountWilayahQuery()
   const { data: dataRuasJalan } = useGetCountRuasJalanQuery()
+  const { data: dataLaporan } = useGetCountLaporanQuery()
   const datalist = [
     {
       leading: 0,
@@ -57,7 +59,7 @@ function Overview() {
             <div className="grid grid-cols-2 gap-4">
               <Card link={datalist[0].link} title={datalist[0].title} leading={dataWilayah && dataWilayah.result} />
               <Card link={datalist[1].link} title={datalist[1].title} leading={dataRuasJalan && dataRuasJalan.result} />
-              <Card link={datalist[2].link} title={datalist[2].title} leading={datalist[2].leading} />
+              <Card link={datalist[2].link} title={datalist[2].title} leading={dataLaporan && dataLaporan.result} />
               <Card link={datalist[3].link} title={datalist[3].title} leading={datalist[3].leading} />
             </div>
           </div>
