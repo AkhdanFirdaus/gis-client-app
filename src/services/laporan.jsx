@@ -14,7 +14,7 @@ export const laporanApi = createApi({
       query: (_) => 'laporan/count'
     }),
     postLaporan: builder.mutation({
-      query: ({body}) => ({
+      query: (body) => ({
         url: 'laporan',
         method: 'POST',
         body

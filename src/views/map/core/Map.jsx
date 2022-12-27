@@ -11,6 +11,7 @@ import {
 } from "../../../features/basemap/basemapSlice"
 import { changeCoordinate } from "../../../features/controls/coordinateSlice"
 import Popup from "../../components/Popup"
+import { selectLineClick } from "../controls/interactions"
 
 const Map = ({ children, zoom, center }) => {
   const mapRef = useRef()
