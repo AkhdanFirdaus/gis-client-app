@@ -4,30 +4,8 @@ import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 import TileLayer from "ol/layer/Tile"
 import {Style, Fill, Stroke, Icon} from 'ol/style'
-import Select from "ol/interaction/Select"
 import GeoJSON from "ol/format/GeoJSON"
-
-const selected = new Style({
-  fill: new Fill({
-    color: '#ffeeee'
-  }),
-  stroke: new Stroke({
-    color: 'rgba(255, 255, 255, 0.7)',
-    width: 2
-  })
-})
-
-const selectFeatureClick = new Select({style: (feature) => {
-  const color = '#eeeeee'
-  selected.getFill().setColor(color)
-  return selected
-}})
-
-const selectLineClick = new Select({style: (feature) => {
-  const color = 'green'
-  selected.getStroke().setColor(color)
-  return selected
-}})
+import { selectFeatureClick, selectLineClick } from '../../views/map/controls/interactions'
 
 const initialState = {
   value: new Map({
@@ -67,7 +45,7 @@ export const basemapSlice = createSlice({
     },
     addFeatureLayer: (state, action) => {
       const map = state.value
-      const { name, color, featureType, strokeColor = null } = action.payload
+      const { name, color, featureType, strokeColor = null, width = 1 } = action.payload
 
       const mapIsAvailable = map.getAllLayers().find(item => item.get('name') === name)
 
@@ -80,7 +58,7 @@ export const basemapSlice = createSlice({
               color: color
             }),
             stroke: new Stroke({
-              width: 1,
+              width,
               color: strokeColor ?? 'white'
             })
           })
@@ -111,20 +89,24 @@ export const basemapSlice = createSlice({
         layer.setVisible(layer.get('name') == name ? !layer.getVisible() : layer.getVisible())
       })
     },
-    selectFeature: (state) => {
+    toggleFeatureOrLayerInteraction: (state, action) => {
+      const map = state.value
+      if (action.payload.feature) {
+        map.removeInteraction(selectFeatureClick)
+        map.addInteraction(selectLineClick)
+      } else {
+        map.removeInteraction(selectLineClick)
+        map.addInteraction(selectFeatureClick)
+      }
+    },
+    addInteraction: (state) => {
       const map = state.value
       map.addInteraction(selectFeatureClick)
-    },
-    removeFeatureInteraction: (state) => {
-      const map = state.value
-      map.removeInteraction(selectFeatureClick)
-    },
-    selectLine: (state) => {
-      const map = state.value
       map.addInteraction(selectLineClick)
     },
-    removeLineInteraction: (state) => {
+    removeInteraction: (state) => {
       const map = state.value
+      map.removeInteraction(selectFeatureClick)
       map.removeInteraction(selectLineClick)
     },
     addOverlay: (state, action) => {
@@ -159,10 +141,9 @@ export const {
   addTileLayer, 
   addFeatureLayer,
   toggleLayer,
-  selectFeature,
-  removeFeatureInteraction,
-  selectLine,
-  removeLineInteraction,
+  toggleFeatureOrLayerInteraction,
+  addInteraction,
+  removeInteraction,
   addOverlay,
   removeOverlay
 } = basemapSlice.actions

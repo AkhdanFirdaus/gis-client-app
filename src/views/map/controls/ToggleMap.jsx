@@ -2,10 +2,28 @@ import { OSM } from "ol/source"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { addFeatureLayer, addTileLayer, toggleLayer } from "../../../features/basemap/basemapSlice"
-import { toggleFeatureClick, toggleLineClick, toggleMapLayersVisible } from "../../../features/controls/controlSlice"
+import { toggleClickFeatureOrLine, toggleMapLayersVisible } from "../../../features/controls/controlSlice"
 import { toggleMenu as toggleMenuAction } from "../../../features/menu/menuSlice"
 import { useGetRuasJalanGeoJSONQuery } from "../../../services/ruasJalan"
 import { useGetWilayahUPTD3JabarQuery } from "../../../services/wilayah"
+
+function ToggleLeftRightItem({left, right, value, handle}) {
+  return (
+    <div className="form-control">
+      <label className="cursor-pointer label">
+        <span className="label-text">{left}</span>
+        <input 
+          type="checkbox" 
+          className="toggle"
+          defaultChecked={value}
+          value={value} 
+          onChange={handle} 
+        />
+        <span className="label-text">{right}</span>
+      </label>
+    </div>
+  )
+}
 
 function ToggleItem({id, name, hasClickAction = false, clickValue, handleClickAction, isVisible = true}) {
   const dispatch = useDispatch()
@@ -45,7 +63,6 @@ function ToggleItem({id, name, hasClickAction = false, clickValue, handleClickAc
 
 function ToggleComponent() {
   const dispatch = useDispatch()
-  const { mapLayersVisible } = useSelector((state) => state.controls.value)
 
   const { isSuccess: successWilayah, data: dataWilayah } = useGetWilayahUPTD3JabarQuery()
   const { isSuccess: successRuasJalan, data: dataRuasJalan } = useGetRuasJalanGeoJSONQuery()
@@ -78,6 +95,7 @@ function ToggleComponent() {
         ...results, 
         strokeColor: 'yellow', 
         featureType: 'geojson', 
+        width: 2,
         name: layerName
       }))
       dispatch(toggleMapLayersVisible({layerName}))
@@ -99,7 +117,7 @@ function ToggleComponent() {
   //   }
   // }, [successDirection, dataDirection])
 
-  const { clickableFeature, clickableLine } = useSelector(state => state.controls.value)
+  const { clickableFeaturerOrLine } = useSelector(state => state.controls.value)
 
   return (
     <div className="w-full">
@@ -109,22 +127,21 @@ function ToggleComponent() {
           <ToggleItem 
             id='wilayah_uptd3' 
             name='Wilayah UPTD 3' 
-            hasClickAction={true}
-            clickValue={clickableFeature}
-            handleClickAction={() => {
-              dispatch(toggleFeatureClick())
-            }}
           />
           <ToggleItem 
             id='ruas_jalan_all' 
             name='Ruas Jalan'
-            hasClickAction={true}
-            clickValue={clickableLine}
-            handleClickAction={() => {
-              dispatch(toggleLineClick())
-            }}
           />
           <ToggleItem id='baseosm' name='Base Map' />
+          <hr />
+          <ToggleLeftRightItem 
+            left='Ruas' 
+            right='Wilayah' 
+            value={clickableFeaturerOrLine}
+            handle={() => {
+              dispatch(toggleClickFeatureOrLine())
+            }}
+          />
         </div>
       </div>
     </div>

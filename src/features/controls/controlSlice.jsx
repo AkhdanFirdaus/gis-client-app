@@ -3,9 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
   value: {
     mapLayersVisible: [],
-    pointVisible: true,
-    clickableFeature: true,
-    clickableLine: true,
+    clickFeatureOrLine: true,
     clickablePoint: true,
   }
 }
@@ -26,11 +24,8 @@ export const controlsSlice = createSlice({
         ]
       }
     },
-    toggleFeatureClick: (state) => {
-      state.value.clickableFeature = !state.value.clickableFeature
-    },
-    toggleLineClick: (state) => {
-      state.value.clickableLine = !state.value.clickableLine
+    toggleClickFeatureOrLine: (state) => {
+      state.value.clickFeatureOrLine = !state.value.clickFeatureOrLine
     },
     togglePointClick: (state) => {
       state.value.clickablePoint = !state.value.clickablePoint
@@ -38,19 +33,15 @@ export const controlsSlice = createSlice({
     disableAllClick: (state) => {
       state.value = {
         ...state.value,
-        clickableFeature: false,
+        clickFeatureOrLine: false,
         clickableLine: false,
         clickablePoint: false,
       }
     },
     resetVisiblity: (state, action) => {
       state.value = {
-        basemapVisible: true,
-        featureVisible: true,
-        lineVisible: true,
-        pointVisible: true,
-        clickableFeature: true,
-        clickableLine: true,
+        mapLayersVisible: [],
+        clickFeatureOrLine: true,
         clickablePoint: true,
       }
     }
@@ -60,8 +51,7 @@ export const controlsSlice = createSlice({
 export const {
   disableAllClick,
   resetVisiblity,
-  toggleFeatureClick,
-  toggleLineClick,
+  toggleClickFeatureOrLine,
   toggleMapLayersVisible,
   togglePointClick
 } = controlsSlice.actions
