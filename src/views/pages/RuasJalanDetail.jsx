@@ -1,8 +1,13 @@
-import React from "react"
-import { useGetRuasJalanDetailQuery } from "../../services/ruasJalan"
+import { useEffect } from "react"
+import { useGetRuasJalanDetailMutation } from "../../services/ruasJalan"
 
-function RuasJalanDetail(id) {
-  const { error, isLoading, data } = useGetRuasJalanDetailQuery(id)
+function RuasJalanDetail({id}) {
+  const [getRuasJalanDetail, { error, isLoading, data }] = useGetRuasJalanDetailMutation()
+
+  useEffect(() => {
+    if (id) getRuasJalanDetail({id})
+  }, [id])
+
   return (
     <div className="w-full">
       <div className="card bg-white">

@@ -11,6 +11,8 @@ import {
   addOverlay
 } from "../../../features/basemap/basemapSlice"
 import { changeCoordinate } from "../../../features/controls/coordinateSlice"
+import { changeRuasJalan } from "../../../features/ruas/ruasJalanSlice"
+import { changeWilayah } from "../../../features/wilayah/wilayahSlice"
 import Popup from "../../components/Popup"
 
 const Map = ({ children, zoom, center }) => {
@@ -41,15 +43,25 @@ const Map = ({ children, zoom, center }) => {
     map.on('click', (e) => {
       const coord = map.getCoordinateFromPixel(e.pixel)
       let hasPoint = false
-      let laporanId = null
       map.forEachFeatureAtPixel(e.pixel, (feature) => {
-        if (feature.getGeometry().getType() === 'Point') {
+        const type = feature.getGeometry().getType()
+        if (type === 'Point') {
           hasPoint = true
-          laporanId = feature.get('uid')
+          let laporanId = feature.get('uid')
+          console.log('Ini Point? ', hasPoint)
+          dispatch(changeCoordinate({coordinate: coord, hasPoint, laporanId}))
+        }
+        if (type === 'LineString' || type === 'MultiLineString') {
+          const ruasId = feature.get('id')
+          console.log(ruasId)
+          dispatch(changeRuasJalan(ruasId))
+        }
+        if (type === 'MultiPolygon' || type === 'Polygon') {
+          const wilayahId = feature.get('id')
+          console.log(wilayahId)
+          dispatch(changeWilayah(wilayahId))
         }
       })
-      console.log('Ini Point? ', hasPoint)
-      dispatch(changeCoordinate({coordinate: coord, hasPoint, laporanId}))
     })
   }, [])
 

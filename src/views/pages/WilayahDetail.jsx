@@ -15,7 +15,7 @@ function WilayahDetail(id) {
           ) : data ? (
             <>
               <h5>{data.result.nama}</h5>
-              <p>Luas: {data.result.luas}</p>
+              <p>Luas: {data.result.luas / 1000} km</p>
               <p>Deskripsi: {data.result.deskripsi ?? 'Tidak ada'}</p>
             </>
           ) : (

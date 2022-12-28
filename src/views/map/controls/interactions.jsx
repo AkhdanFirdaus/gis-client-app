@@ -32,8 +32,8 @@ export const selectLineClick = new Select({
   },
   style: (feature) => {
     const jarak = feature.get('jarak')
-    document.getElementById('namaRuas').innerHTML = feature.get('nama')
-    document.getElementById('jarakRuas').innerHTML = 'Jarak ' + (jarak > 0 ? jarak / 1000 : 0) + ' km'
+    // document.getElementById('namaRuas').innerHTML = feature.get('nama')
+    // document.getElementById('jarakRuas').innerHTML = 'Jarak ' + (jarak > 0 ? jarak / 1000 : 0) + ' km'
     const color = 'green'
     selected.getFill().setColor('magenta')
     selected.getStroke().setColor(color)
