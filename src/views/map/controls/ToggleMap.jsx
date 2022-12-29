@@ -146,6 +146,10 @@ function ToggleComponent() {
             id='ruas_jalan_all' 
             name='Ruas Jalan'
           />
+          <ToggleItem 
+            id='laporan_point' 
+            name='Laporan'
+          />
           <ToggleItem id='baseosm' name='Base Map' />
           <hr />
           <ToggleLeftRightItem 

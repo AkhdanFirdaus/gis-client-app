@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 function TambahLaporan() {
   const [alert, setAlert] = useState(false)
   const [message, setMessage] = useState(false)
-  const selectedCoordinate = useSelector((state) => state.coordinate.value)
+  const { selectedCoordinate } = useSelector((state) => state.coordinate.value)
   const [postLaporan, {isLoading, error, data}] = usePostLaporanMutation()
   
   const coordRef = useRef()

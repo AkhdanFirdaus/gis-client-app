@@ -21,6 +21,8 @@ const Map = ({ children, zoom, center }) => {
   const { clickFeatureOrLine } = useSelector(state => state.controls.value)
   const { selectedCoordinate, currentCoordinateHasPoint } = useSelector(state => state.coordinate.value)
 
+  const [selectedRuas, setSelectedRuas] = useState(null)
+  const [selectedWilayah, setSelectedWilayah] = useState(null)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -48,22 +50,27 @@ const Map = ({ children, zoom, center }) => {
         if (type === 'Point') {
           hasPoint = true
           let laporanId = feature.get('uid')
-          console.log('Ini Point? ', hasPoint)
           dispatch(changeCoordinate({coordinate: coord, hasPoint, laporanId}))
         }
-        if (type === 'LineString' || type === 'MultiLineString') {
+        if (type === 'LineString' || type === 'MultiLineString' && !clickFeatureOrLine) {
           const ruasId = feature.get('id')
-          console.log(ruasId)
-          dispatch(changeRuasJalan(ruasId))
+          setSelectedRuas(ruasId)
         }
-        if (type === 'MultiPolygon' || type === 'Polygon') {
+        if (type === 'MultiPolygon' || type === 'Polygon' && clickFeatureOrLine) {
           const wilayahId = feature.get('id')
-          console.log(wilayahId)
-          dispatch(changeWilayah(wilayahId))
+          setSelectedWilayah(wilayahId)
         }
       })
     })
   }, [])
+  
+  useEffect(() => {
+    if (selectedWilayah) dispatch(changeWilayah(selectedWilayah))
+  }, [selectedWilayah])
+
+  useEffect(() => {
+    if (selectedRuas) dispatch(changeRuasJalan(selectedRuas))
+  }, [selectedRuas])
 
   useEffect(() => {
     if (!map) return

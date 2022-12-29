@@ -6,9 +6,6 @@ import TileLayer from "ol/layer/Tile"
 import {Style, Fill, Stroke, Icon} from 'ol/style'
 import GeoJSON from "ol/format/GeoJSON"
 import { selectFeatureClick, selectLineClick } from '../../views/map/controls/interactions'
-import Point from 'ol/geom/Point'
-import { Feature } from 'ol'
-import { fromLonLat } from 'ol/proj'
 
 const initialState = {
   value: new Map({
@@ -72,6 +69,7 @@ export const basemapSlice = createSlice({
 
         }
 
+        newlayer.set('name', name)
         map.addLayer(newlayer)
       }
     },

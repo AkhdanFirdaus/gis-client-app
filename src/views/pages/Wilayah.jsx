@@ -1,24 +1,10 @@
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import { changeWilayah } from "../../features/wilayah/wilayahSlice"
 import { useGetWilayahQuery } from "../../services/wilayah";
 import { useState, useEffect } from "react";
-
-function Card({place, id, handleClick}) {
-  const style = {
-    card: 'card shadow hover:bg-slate-200 hover:transition-opacity hover:cursor-pointer'
-  }
-  const selected = useSelector((state) => state.wilayah.value)
-
-  return (
-    <div className={`${style.card} ${selected == id ? 'bg-slate-200' : ''}`} onClick={() => handleClick(id)}>
-      <div className="card-body">
-        <div className="card-title">{place}</div>
-      </div>
-    </div>
-  )
-}
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import WilayahItem from "../components/WilayahItem"
 
 function Wilayah() {
   const [count, setCount] = useState(0)
@@ -51,7 +37,7 @@ function Wilayah() {
                 {Array.from(data.results).map(val => {
                   return (
                     <li key={val.id}>
-                      <Card handleClick={handleClick} place={val.nama} id={val.id} />
+                      <WilayahItem handleClick={handleClick} place={val.nama} id={val.id} />
                     </li>
                   )
                 })}

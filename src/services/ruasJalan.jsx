@@ -16,6 +16,9 @@ export const ruasJalanApi = createApi({
         method: 'GET'
       })
     }),
+    getRuasByWilayah: builder.query({
+      query: ({wilayah_id}) => `ruas-jalan?wilayah_id=${wilayah_id}`,
+    }),
     getCountRuasJalan: builder.query({
       query: (_) => 'ruas-jalan/count'
     }),
@@ -29,6 +32,7 @@ export const {
   useGetRuasJalanGeoJSONQuery,
   useGetRuasJalanQuery,
   useGetRuasJalanDetailMutation,
+  useGetRuasByWilayahQuery,
   useGetCountRuasJalanQuery,
   useGetDirectionQuery
 } = ruasJalanApi

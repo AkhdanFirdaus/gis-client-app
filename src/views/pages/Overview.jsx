@@ -54,7 +54,7 @@ function Overview() {
       <div className="h-full flex flex-col justify-between">
         <Navbar title='Overview' />
         <main>
-          <Header title='Rata-Rata' subtitle='Indeks Kondisi Perkerasan' />
+          {/* <Header title='Rata-Rata' subtitle='Indeks Kondisi Perkerasan' /> */}
           <div className='mt-4'>
             <div className="grid grid-cols-2 gap-4">
               <Card link={datalist[0].link} title={datalist[0].title} leading={dataWilayah && dataWilayah.result} />
